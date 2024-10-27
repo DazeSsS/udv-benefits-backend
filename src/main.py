@@ -1,11 +1,27 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import all_routers
+from config import settings
+
+from app.routers import api_router
 
 
 app = FastAPI(
     title='UDV Кафетерий льгот'
 )
 
-for router in all_routers:
-    app.include_router(router)
+app.include_router(api_router)
+
+
+origins = [
+    settings.LOCAL_ORIGIN,
+    settings.MAIN_ORIGIN,
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"], 
+)

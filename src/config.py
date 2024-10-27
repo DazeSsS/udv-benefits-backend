@@ -8,9 +8,17 @@ class Settings(BaseSettings):
     POSTGRES_DB: str 
     POSTGRES_HOST: str
     POSTGRES_PORT: str
+
     DB_HOST: str
+
     COINS_DEFAULT: int
     TIMEZONE: str
+
+    JWT_SECRET: str
+    ALGORITHM: str
+
+    LOCAL_ORIGIN: str
+    MAIN_ORIGIN: str
 
     model_config = SettingsConfigDict(env_file='.env')
 
