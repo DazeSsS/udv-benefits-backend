@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repository import SQLAlchemyRepository
-from app.categories.domain.schemas import CategorySchemaAdd
+from app.internal.categories.domain.schemas import CategorySchemaAdd
 
 
 class CategoryService:

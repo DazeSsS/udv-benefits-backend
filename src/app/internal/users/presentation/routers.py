@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app.dependencies import user_service
-from app.users.domain.schemas import UserSchema, UserSchemaAdd
-from app.users.domain.services import UserService
+from app.internal.users.domain.schemas import UserSchema, UserSchemaAdd
+from app.internal.users.domain.services import UserService
 
 
 router = APIRouter(

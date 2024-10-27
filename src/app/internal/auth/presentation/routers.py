@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app.dependencies import category_service
-from app.categories.domain.schemas import CategorySchema, CategorySchemaAdd
-from app.categories.domain.services import CategoryService
+from app.internal.categories.domain.schemas import CategorySchema, CategorySchemaAdd
+from app.internal.categories.domain.services import CategoryService
 
 
 router = APIRouter(

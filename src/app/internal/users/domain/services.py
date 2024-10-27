@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repository import SQLAlchemyRepository
-from app.users.domain.schemas import UserSchemaAdd
+from app.internal.users.domain.schemas import UserSchemaAdd
 
 
 class UserService:
