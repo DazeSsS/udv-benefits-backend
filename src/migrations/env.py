@@ -7,13 +7,13 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from app.models import (
+from app.internal.models import (
     Benefit,
     Category,
     Comment,
-    Employee,
     NewEmployee,
     Request,
+    Token,
     User
 )
 

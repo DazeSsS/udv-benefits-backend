@@ -1,30 +1,45 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from pydantic import EmailStr
+from fastapi import APIRouter, BackgroundTasks, Depends, Response, Request, status
 
-from app.dependencies import category_service
-from app.internal.categories.domain.schemas import CategorySchema, CategorySchemaAdd
-from app.internal.categories.domain.services import CategoryService
+from app.internal.dependencies import auth_service
+from app.internal.auth.domain.services import AuthService
+from app.internal.auth.domain.schemas import TokenPairSchema
 
 
 router = APIRouter(
-    prefix='/categories',
-    tags=['Categories'],
+    prefix='/auth',
+    tags=['Auth'],
 )
 
 
-@router.post('')
-async def add_category(
-    category: CategorySchemaAdd,
-    category_service: Annotated[CategoryService, Depends(category_service)],
-) -> CategorySchema:
-    new_category = await category_service.add_category(category)
-    return new_category
+@router.post('/send-email')
+async def send_email(
+    email: EmailStr,
+    auth_service: Annotated[AuthService, Depends(auth_service)],
+    background_tasks: BackgroundTasks,
+):
+    try:
+        await auth_service.send_email(email=email, background_tasks=background_tasks)
+        return Response(status_code=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(content=f'{e}', status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.get('')
-async def get_categories(
-    category_service: Annotated[CategoryService, Depends(category_service)],
-) -> list[CategorySchema]:
-    categories = await category_service.get_categories()
-    return categories
+@router.post('/tokens/login')
+async def login(
+    token: str,
+    auth_service: Annotated[AuthService, Depends(auth_service)],
+) -> TokenPairSchema:
+    tokens = await auth_service.login(token=token)
+    return tokens
+
+
+@router.post('/tokens/refresh')
+async def refresh_tokens(
+    refresh_token: str,
+    auth_service: Annotated[AuthService, Depends(auth_service)],
+) -> TokenPairSchema:
+    tokens = await auth_service.refresh_tokens(refresh_token=refresh_token)
+    return tokens

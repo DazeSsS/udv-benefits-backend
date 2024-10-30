@@ -1,22 +1,121 @@
+import jwt
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import BackgroundTasks
 
-from app.repository import SQLAlchemyRepository
-from app.internal.categories.domain.schemas import CategorySchemaAdd
+from app.email_client import EmailClient
+from app.internal.auth.db.repositories import AuthRepository
+from app.internal.auth.domain.schemas import TokenPairSchema, TokenSchemaAdd
+from app.internal.users.db.repositories import UserRepository
+
+from config import settings
+
+from app.internal.models import User
 
 
-class CategoryService:
+class AuthService:
     def __init__(
         self,
-        category_repo: SQLAlchemyRepository,
+        auth_repo: AuthRepository,
+        user_repo: UserRepository,
+        email_client: EmailClient,
         session: AsyncSession,
     ):
-        self.category_repo: SQLAlchemyRepository = category_repo(session)
+        self.auth_repo: AuthRepository = auth_repo(session)
+        self.user_repo: UserRepository = user_repo(session)
+        self.email_client: EmailClient = email_client()
 
-    async def add_category(self, category: CategorySchemaAdd):
-        category_dict = category.model_dump()
-        category = await self.category_repo.add(category_dict)
-        return category
+    @staticmethod
+    def get_payload(token: str):
+        payload = jwt.decode(
+            jwt=token,
+            key=settings.JWT_SECRET,
+            algorithms=settings.JWT_ALGORITHM
+        )
+        return payload
+    
+    @staticmethod
+    def create_jwt(payload: dict, lifetime: timedelta):
+        token = jwt.encode(
+            payload={
+                'exp': datetime.now(timezone.utc) + lifetime,
+                **payload
+            },
+            key=settings.JWT_SECRET,
+            algorithm=settings.JWT_ALGORITHM,
+        )
+        return token
 
-    async def get_categories(self):
-        categories = await self.category_repo.get_all()
-        return categories
+    async def revoke_tokens(self, user_id: int):
+        await self.auth_repo.revoke_tokens_by_user_id(user_id=user_id)
+
+    async def create_tokens(self, user: User):
+        payload = {
+            'id': user.id,
+            'role': user.position,
+        }
+
+        access_token = self.create_jwt(payload=payload, lifetime=settings.ACCESS_LIFETIME)
+        refresh_token = self.create_jwt(payload={}, lifetime=settings.REFRESH_LIFETIME)
+
+        await self.auth_repo.add(jti=refresh_token, user_id=user.id)
+
+        return TokenPairSchema(access=access_token, refresh=refresh_token)
+
+    async def refresh_tokens(self, refresh_token: str):
+        token = await self.auth_repo.get_token_with_user(jti=refresh_token)
+
+        if token is None:
+            return # TODO
+
+        if token.revoked:
+            return # TODO
+
+        user = token.user
+        await self.revoke_tokens(user.id)
+
+        try:
+            self.get_payload(token=token.jti)
+        except jwt.ExpiredSignatureError:
+            return # TODO
+
+        token_pair = await self.create_tokens(user)
+        return token_pair
+
+    async def login(self, token: str):
+        try:
+            payload = self.get_payload(token=token)
+            user_id = payload.get('id')
+            print(type(user_id), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+        except jwt.InvalidTokenError:
+            return # TODO
+
+        user = await self.user_repo.get_by_id(id=user_id)
+
+        token_pair = await self.create_tokens(user=user)
+        return token_pair
+
+    async def send_email(self, email: str, background_tasks: BackgroundTasks):
+        # TODO: check if email in employee list
+
+        user = await self.user_repo.get_one_by_fields(email=email)
+
+        if user is None:
+            return
+            # TODO: raise exception
+
+        jwt_token = self.create_jwt(payload={'id': user.id}, lifetime=timedelta(minutes=5))
+
+        background_tasks.add_task(
+            self.email_client.send_email,
+            recipient_list=['ivanrakov540@gmail.com'],
+            subject='Вход в аккаунт Кафетерий льгот UDV',
+            text=(
+                'Поздравляем, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
+                f'Ваш токен: {jwt_token}'
+            ),
+            html=(
+                '<b>Поздравляем, ваш аккаунт был успешно зарегистрирован на Кафетерии льгот UDV!</b><br><br>'
+                f'Ваш токен: {jwt_token}'
+            )
+        )

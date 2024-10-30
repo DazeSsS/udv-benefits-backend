@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import benefit_service
+from app.internal.dependencies import benefit_service
 from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd
 from app.internal.benefits.domain.services import BenefitService
 
@@ -54,5 +54,6 @@ async def update_benefit_by_id(
 async def delete_benefit_by_id(
     id: int,
     benefit_service: Annotated[BenefitService, Depends(benefit_service)],
-) -> None:
+):
     await benefit_service.delete_benefit_by_id(id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

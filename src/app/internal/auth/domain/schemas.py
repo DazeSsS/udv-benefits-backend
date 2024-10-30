@@ -1,9 +1,21 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
-class CategorySchemaAdd(BaseModel):
-    title: str
+class TokenSchemaAdd(BaseModel):
+    jti: str
+    user_id: int
 
 
-class CategorySchema(CategorySchemaAdd):
-    id: int
+class TokenSchemaUpdate(BaseModel):
+    revoked: bool
+
+
+class TokenSchema(TokenSchemaAdd):
+    created_at: datetime
+    revoked: bool
+
+
+class TokenPairSchema(BaseModel):
+    access: str
+    refresh: str

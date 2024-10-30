@@ -2,7 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from app.dependencies import user_service
+from app.internal.dependencies import user_service
+from app.internal.permissions import admin_permission
 from app.internal.users.domain.schemas import UserSchema, UserSchemaAdd
 from app.internal.users.domain.services import UserService
 
@@ -23,7 +24,7 @@ async def add_user(
 
 
 @router.get('')
-async def get_categories(
+async def get_users(
     user_service: Annotated[UserService, Depends(user_service)],
 ) -> list[UserSchema]:
     users = await user_service.get_users()

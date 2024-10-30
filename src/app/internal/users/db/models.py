@@ -37,3 +37,4 @@ class User(Base):
     
     requests: Mapped[list['Request']] = relationship(back_populates='user')
     new_employees: Mapped[list['NewEmployee']] = relationship(back_populates='admin')
+    tokens: Mapped[list['Token']] = relationship(back_populates='user')

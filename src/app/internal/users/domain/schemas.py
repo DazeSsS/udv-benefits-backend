@@ -18,9 +18,9 @@ class UserSchemaAdd(BaseModel):
     middle_name: str
     birth_date: date
     has_children: bool
-    # profile_photo
+    # TODO profile_photo
     work_start_date: date
-    work_end_date: date
+    work_end_date: date | None = None
     position: PositionEnum
     department: str
 

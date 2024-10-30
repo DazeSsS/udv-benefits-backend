@@ -1,5 +1,5 @@
 from app.repository import SQLAlchemyRepository
-from app.models import NewEmployee
+from app.internal.models import NewEmployee
 
 
 class NewEmployeeRepository(SQLAlchemyRepository):

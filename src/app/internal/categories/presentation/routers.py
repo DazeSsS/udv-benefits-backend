@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from app.dependencies import category_service
+from app.internal.dependencies import category_service
 from app.internal.categories.domain.schemas import CategorySchema, CategorySchemaAdd
 from app.internal.categories.domain.services import CategoryService
 

@@ -1,5 +1,5 @@
 from app.repository import SQLAlchemyRepository
-from app.models import Benefit
+from app.internal.models import Benefit
 
 
 class BenefitRepository(SQLAlchemyRepository):

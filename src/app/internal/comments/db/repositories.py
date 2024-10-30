@@ -1,5 +1,5 @@
 from app.repository import SQLAlchemyRepository
-from app.models import Comment
+from app.internal.models import Comment
 
 
 class CommentRepository(SQLAlchemyRepository):

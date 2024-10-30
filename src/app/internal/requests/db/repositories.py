@@ -1,5 +1,5 @@
 from app.repository import SQLAlchemyRepository
-from app.models import Request
+from app.internal.models import Request
 
 
 class RequestRepository(SQLAlchemyRepository):

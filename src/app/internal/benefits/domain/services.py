@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repository import AbstractRepository
 from app.internal.benefits.db.repositories import BenefitRepository
 from app.internal.benefits.domain.schemas import BenefitSchemaAdd
 
@@ -15,7 +14,7 @@ class BenefitService:
 
     async def add_benefit(self, benefit: BenefitSchemaAdd):
         benefit_dict = benefit.model_dump()
-        benefit = await self.benefit_repo.add(benefit_dict)
+        benefit = await self.benefit_repo.add(data=benefit_dict)
         return benefit
 
     async def get_benefit_by_id(self, id: int):
@@ -32,5 +31,5 @@ class BenefitService:
         return updated_benefit
 
     async def delete_benefit_by_id(self, id: int):
-        deleted = await self.benefit_repo.delete_by_id(id)
-        return deleted
+        await self.benefit_repo.delete_by_id(id)
+        return

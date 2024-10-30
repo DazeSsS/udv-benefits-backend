@@ -1,20 +1,20 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repository import SQLAlchemyRepository
+from app.internal.categories.db.repositories import CategoryRepository
 from app.internal.categories.domain.schemas import CategorySchemaAdd
 
 
 class CategoryService:
     def __init__(
         self,
-        category_repo: SQLAlchemyRepository,
+        category_repo: CategoryRepository,
         session: AsyncSession,
     ):
-        self.category_repo: SQLAlchemyRepository = category_repo(session)
+        self.category_repo: CategoryRepository = category_repo(session)
 
     async def add_category(self, category: CategorySchemaAdd):
         category_dict = category.model_dump()
-        category = await self.category_repo.add(category_dict)
+        category = await self.category_repo.add(data=category_dict)
         return category
 
     async def get_categories(self):
