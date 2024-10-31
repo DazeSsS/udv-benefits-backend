@@ -23,7 +23,7 @@ def category_service(session: Annotated[AsyncSession, Depends(get_async_session)
     return CategoryService(CategoryRepository, session)
 
 def benefit_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
-    return BenefitService(BenefitRepository, session)
+    return BenefitService(BenefitRepository, CategoryRepository, session)
 
 def user_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
     return UserService(UserRepository, session)

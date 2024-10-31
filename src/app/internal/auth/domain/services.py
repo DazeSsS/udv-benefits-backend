@@ -51,8 +51,8 @@ class AuthService:
 
     async def create_tokens(self, user: User):
         payload = {
-            'id': user.id,
-            'role': user.position,
+            'user_id': user.id,
+            'is_admin': user.is_admin,
         }
 
         access_token = self.create_jwt(payload=payload, lifetime=settings.ACCESS_LIFETIME)
@@ -60,7 +60,7 @@ class AuthService:
 
         await self.auth_repo.add(jti=refresh_token, user_id=user.id)
 
-        return TokenPairSchema(access=access_token, refresh=refresh_token)
+        return TokenPairSchema(access_token=access_token, refresh_token=refresh_token)
 
     async def refresh_tokens(self, refresh_token: str):
         token = await self.auth_repo.get_token_with_user(jti=refresh_token)
@@ -85,8 +85,7 @@ class AuthService:
     async def login(self, token: str):
         try:
             payload = self.get_payload(token=token)
-            user_id = payload.get('id')
-            print(type(user_id), 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+            user_id = payload.get('user_id')
         except jwt.InvalidTokenError:
             return # TODO
 
@@ -100,15 +99,17 @@ class AuthService:
 
         user = await self.user_repo.get_one_by_fields(email=email)
 
+        print(settings.ACCESS_LIFETIME)
+
         if user is None:
             return
             # TODO: raise exception
 
-        jwt_token = self.create_jwt(payload={'id': user.id}, lifetime=timedelta(minutes=5))
+        jwt_token = self.create_jwt(payload={'user_id': user.id}, lifetime=timedelta(minutes=5))
 
         background_tasks.add_task(
             self.email_client.send_email,
-            recipient_list=['ivanrakov540@gmail.com'],
+            recipient_list=[],
             subject='Вход в аккаунт Кафетерий льгот UDV',
             text=(
                 'Поздравляем, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'

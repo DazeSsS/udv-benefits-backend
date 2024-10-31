@@ -17,5 +17,5 @@ class TokenSchema(TokenSchemaAdd):
 
 
 class TokenPairSchema(BaseModel):
-    access: str
-    refresh: str
+    access_token: str
+    refresh_token: str

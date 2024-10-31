@@ -27,7 +27,7 @@ async def send_email(
         return Response(content=f'{e}', status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.post('/tokens/login')
+@router.post('/token/login')
 async def login(
     token: str,
     auth_service: Annotated[AuthService, Depends(auth_service)],
@@ -36,7 +36,7 @@ async def login(
     return tokens
 
 
-@router.post('/tokens/refresh')
+@router.post('/token/refresh')
 async def refresh_tokens(
     refresh_token: str,
     auth_service: Annotated[AuthService, Depends(auth_service)],

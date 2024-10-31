@@ -30,3 +30,8 @@ class UserSchema(UserSchemaAdd):
     is_admin: bool
     is_verified: bool
     coins: int
+
+
+class UserInfoSchema(BaseModel):
+    id: int
+    is_admin: bool

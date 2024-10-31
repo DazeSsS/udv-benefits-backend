@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from middleware import JWTAuthMiddleware
+from middleware import BearerTokenMiddleware
 
 from app.internal.routers import api_router
 
@@ -26,4 +26,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"], 
 )
-app.add_middleware(JWTAuthMiddleware)
+app.add_middleware(BearerTokenMiddleware)

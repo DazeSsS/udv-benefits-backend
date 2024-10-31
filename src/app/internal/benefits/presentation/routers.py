@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.internal.dependencies import benefit_service
-from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd
+from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd, GroupedBenefitSchema
 from app.internal.benefits.domain.services import BenefitService
 
 

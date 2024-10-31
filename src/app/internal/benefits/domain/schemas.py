@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class BenefitSchemaAdd(BaseModel):
@@ -12,4 +12,12 @@ class BenefitSchemaAdd(BaseModel):
 
 
 class BenefitSchema(BenefitSchemaAdd):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
+
+
+class GroupedBenefitSchema(BaseModel):
+    category_id: int
+    category_title: str
+    benefits: list['BenefitSchema']
