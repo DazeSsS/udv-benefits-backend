@@ -12,12 +12,12 @@ class Comment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     message: Mapped[str] = mapped_column(String(256))
-    request_id: Mapped[int] = mapped_column(ForeignKey('request.id', ondelete='CASCADE'))
+    request_id: Mapped[int] = mapped_column(ForeignKey('order.id', ondelete='CASCADE'))
     sender_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     сreated_at: Mapped[datetime] = mapped_column(
         DateTime,
         server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
     )
 
-    request: Mapped['Request'] = relationship(back_populates='comments')
+    order: Mapped['Order'] = relationship(back_populates='comments')
     sender: Mapped['User'] = relationship()

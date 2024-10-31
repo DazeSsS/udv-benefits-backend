@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: bf9804f133de
+Revision ID: a6545f204c64
 Revises: 
-Create Date: 2024-10-21 07:37:40.677244
+Create Date: 2024-11-01 03:11:46.746413
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'bf9804f133de'
+revision: str = 'a6545f204c64'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,43 +32,47 @@ def upgrade() -> None:
     sa.Column('last_name', sa.String(length=50), nullable=False),
     sa.Column('middle_name', sa.String(length=50), nullable=True),
     sa.Column('birth_date', sa.Date(), nullable=False),
+    sa.Column('phone', sa.String(length=15), nullable=False),
     sa.Column('is_admin', sa.Boolean(), server_default='false', nullable=False),
     sa.Column('is_verified', sa.Boolean(), server_default='false', nullable=False),
     sa.Column('has_children', sa.Boolean(), server_default='false', nullable=False),
-    sa.Column('work_start_date', sa.Date(), nullable=False),
+    sa.Column('work_start_date', sa.Date(), nullable=True),
     sa.Column('work_end_date', sa.Date(), nullable=True),
-    sa.Column('position', sa.String(length=50), nullable=False),
-    sa.Column('department', sa.String(length=50), nullable=False),
+    sa.Column('position', sa.String(length=50), nullable=True),
+    sa.Column('department', sa.String(length=50), nullable=True),
     sa.Column('coins', sa.Integer(), server_default='2000', nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
     op.create_table('benefit',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('title', sa.String(length=100), nullable=False),
-    sa.Column('description', sa.String(length=1000), nullable=False),
+    sa.Column('title', sa.String(length=128), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
     sa.Column('price', sa.Integer(), nullable=False),
-    sa.Column('period', sa.String(), nullable=False),
-    sa.Column('instructions', sa.String(length=1000), nullable=False),
+    sa.Column('period', sa.String(length=25), nullable=False),
+    sa.Column('instructions', sa.String(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_cancellable', sa.Boolean(), nullable=False),
+    sa.Column('сreated_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('new_employee',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('email', sa.String(length=50), nullable=False),
-    sa.Column('admin_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['admin_id'], ['users.id'], ondelete='SET NULL'),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    op.create_table('token',
+    sa.Column('jti', sa.String(length=255), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('revoked', sa.Boolean(), server_default='false', nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('jti')
     )
-    op.create_table('request',
+    op.create_table('order',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.String(length=25), nullable=False),
+    sa.Column('status', sa.String(length=50), nullable=False),
     sa.Column('benefit_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('сreated_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('сreated_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
+    sa.Column('activated_at', sa.Date(), nullable=True),
+    sa.Column('ends_at', sa.Date(), nullable=True),
     sa.ForeignKeyConstraint(['benefit_id'], ['benefit.id'], ondelete='RESTRICT'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
@@ -79,7 +83,7 @@ def upgrade() -> None:
     sa.Column('request_id', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
     sa.Column('сreated_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
-    sa.ForeignKeyConstraint(['request_id'], ['request.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['request_id'], ['order.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['sender_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -89,8 +93,8 @@ def upgrade() -> None:
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('comment')
-    op.drop_table('request')
-    op.drop_table('new_employee')
+    op.drop_table('order')
+    op.drop_table('token')
     op.drop_table('benefit')
     op.drop_table('users')
     op.drop_table('category')

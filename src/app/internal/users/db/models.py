@@ -9,11 +9,11 @@ from config import settings
 
 
 class Position(Enum):
-    hr = 'HR'
-    backend = 'Backend разработчик'
-    frontend = 'Frontend разработчик'
-    tester = 'Тестировщик'
-    manager = 'Менеджер'
+    HR = 'hr'
+    BACKEND = 'backend'
+    FRONTEND = 'frontend'
+    TESTER = 'tester'
+    MANAGER = 'manager'
 
 
 class User(Base):
@@ -25,16 +25,16 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(50))
     middle_name: Mapped[str] = mapped_column(String(50), nullable=True)
     birth_date: Mapped[date] = mapped_column(Date)
+    phone: Mapped[str] = mapped_column(String(15))
     is_admin: Mapped[bool] = mapped_column(Boolean, server_default='false')
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default='false')
     has_children: Mapped[bool] = mapped_column(Boolean, server_default='false')
     # profile_photo
-    work_start_date: Mapped[date] = mapped_column(Date)
+    work_start_date: Mapped[date] = mapped_column(Date, nullable=True)
     work_end_date: Mapped[date] = mapped_column(Date, nullable=True)
-    position: Mapped[Position] = mapped_column(String(50))
-    department: Mapped[str] = mapped_column(String(50))
+    position: Mapped[Position] = mapped_column(String(50), nullable=True)
+    department: Mapped[str] = mapped_column(String(50), nullable=True)
     coins: Mapped[int] = mapped_column(Integer, server_default=f'{settings.COINS_DEFAULT}')
     
-    requests: Mapped[list['Request']] = relationship(back_populates='user')
-    new_employees: Mapped[list['NewEmployee']] = relationship(back_populates='admin')
+    orders: Mapped[list['Order']] = relationship(back_populates='user')
     tokens: Mapped[list['Token']] = relationship(back_populates='user')

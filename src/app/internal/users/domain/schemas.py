@@ -4,11 +4,11 @@ from pydantic import BaseModel, EmailStr
 
 
 class PositionEnum(str, Enum):
-    hr = 'HR'
-    backend = 'Backend разработчик'
-    frontend = 'Frontend разработчик'
-    tester = 'Тестировщик'
-    manager = 'Менеджер'
+    HR = 'hr'
+    BACKEND = 'backend'
+    FRONTEND = 'frontend'
+    TESTER = 'tester'
+    MANAGER = 'manager'
 
 
 class UserSchemaAdd(BaseModel):
@@ -17,12 +17,13 @@ class UserSchemaAdd(BaseModel):
     last_name: str
     middle_name: str
     birth_date: date
-    has_children: bool
+    phone: str
+    has_children: bool = False
     # TODO profile_photo
-    work_start_date: date
+    work_start_date: date | None = None
     work_end_date: date | None = None
-    position: PositionEnum
-    department: str
+    position: PositionEnum | None = None
+    department: str | None = None
 
 
 class UserSchema(UserSchemaAdd):
