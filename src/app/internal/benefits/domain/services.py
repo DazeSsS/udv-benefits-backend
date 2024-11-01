@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.internal.benefits.db.repositories import BenefitRepository
 from app.internal.categories.db.repositories import CategoryRepository
-from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd, GroupedBenefitSchema
+from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
 
 
 class BenefitService:
@@ -45,8 +45,8 @@ class BenefitService:
 
         return grouped_benefits
 
-    async def update_benefit_by_id(self, benefit_id: int, new_data: BenefitSchemaAdd):
-        new_data_dict = new_data.model_dump()
+    async def update_benefit_by_id(self, benefit_id: int, new_data: BenefitSchemaUpdate):
+        new_data_dict = new_data.model_dump(exclude_unset=True)
         updated_benefit = await self.benefit_repo.update_by_id(id=benefit_id, new_data=new_data_dict)
         return updated_benefit
 

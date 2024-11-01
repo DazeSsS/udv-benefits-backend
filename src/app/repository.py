@@ -29,7 +29,7 @@ class SQLAlchemyRepository:
         result = await self.session.scalar(query)
         return result
 
-    async def get_all_by_fields(self, **kwargs) -> model:
+    async def get_all_by_fields(self, **kwargs) -> list[model]:
         query = select(self.model).filter_by(**kwargs)
         result = await self.session.scalars(query)
         return result.all()

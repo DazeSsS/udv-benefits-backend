@@ -12,6 +12,8 @@ from app.internal.categories.db.repositories import CategoryRepository
 from app.internal.categories.domain.services import CategoryService
 from app.internal.benefits.db.repositories import BenefitRepository
 from app.internal.benefits.domain.services import BenefitService
+from app.internal.orders.db.repositories import OrderRepository
+from app.internal.orders.domain.services import OrderService
 from app.internal.users.db.repositories import UserRepository
 from app.internal.users.domain.services import UserService
 
@@ -24,6 +26,9 @@ def category_service(session: Annotated[AsyncSession, Depends(get_async_session)
 
 def benefit_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
     return BenefitService(BenefitRepository, CategoryRepository, session)
+
+def order_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
+    return OrderService(OrderRepository, session)
 
 def user_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
     return UserService(UserRepository, session)

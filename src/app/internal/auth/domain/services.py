@@ -107,9 +107,10 @@ class AuthService:
 
         jwt_token = self.create_jwt(payload={'user_id': user.id}, lifetime=timedelta(minutes=5))
 
+        recipient_list = [settings.TEST_EMAIL] if settings.TEST_MODE else [email]
         background_tasks.add_task(
             self.email_client.send_email,
-            recipient_list=[],
+            recipient_list=recipient_list,
             subject='Вход в аккаунт Кафетерий льгот UDV',
             text=(
                 'Поздравляем, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
