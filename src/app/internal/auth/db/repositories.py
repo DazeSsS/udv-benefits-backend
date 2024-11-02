@@ -10,19 +10,19 @@ class AuthRepository(SQLAlchemyRepository):
 
     async def get_token_with_user(self, **kwargs):
         query = (
-            select(self.model)
+            select(Token)
             .filter_by(**kwargs)
-            .options(joinedload(self.model.user))
+            .options(joinedload(Token.user))
         )
         result = await self.session.scalar(query)
         return result
 
     async def revoke_tokens_by_user_id(self, user_id: int):
         stmt = (
-            update(self.model)
+            update(Token)
             .where(
-                self.model.user_id == user_id,
-                self.model.revoked == False
+                Token.user_id == user_id,
+                Token.revoked == False
             )
             .values(revoked=True)
         )

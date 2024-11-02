@@ -20,3 +20,10 @@ class CategoryService:
     async def get_categories(self):
         categories = await self.category_repo.get_all()
         return categories
+
+    async def get_category_by_id(self, category_id: int):
+        category = await self.category_repo.get_by_id(id=category_id)
+        return category
+
+    async def delete_category_by_id(self, category_id: int):
+        await self.category_repo.delete_by_id(id=category_id)

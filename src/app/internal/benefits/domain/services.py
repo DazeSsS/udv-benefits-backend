@@ -52,4 +52,3 @@ class BenefitService:
 
     async def delete_benefit_by_id(self, benefit_id: int):
         await self.benefit_repo.delete_by_id(id=benefit_id)
-        return

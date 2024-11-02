@@ -8,7 +8,7 @@ from database import Base
 from config import settings
 
 
-class Position(Enum):
+class Position(str, Enum):
     HR = 'hr'
     BACKEND = 'backend'
     FRONTEND = 'frontend'

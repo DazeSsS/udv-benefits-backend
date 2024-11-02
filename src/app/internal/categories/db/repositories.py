@@ -10,8 +10,8 @@ class CategoryRepository(SQLAlchemyRepository):
 
     async def get_categories_with_benefits(self):
         query = (
-            select(self.model)
-            .options(selectinload(self.model.benefits))
+            select(Category)
+            .options(selectinload(Category.benefits))
         )
         result = await self.session.scalars(query)
         return result.all()

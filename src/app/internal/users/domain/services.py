@@ -25,7 +25,16 @@ class UserService:
         unverified_users = await self.user_repo.get_all_by_fields(is_verified=False)
         return unverified_users
 
-    async def get_user_by_id(self, user_id):
+    async def get_user_orders(self, user_id: int):
+        user = await self.user_repo.get_user_with_orders(user_id=user_id)
+        return user.orders
+
+    async def get_user_benefits(self, user_id: int):
+        user = await self.user_repo.get_user_with_benefits(user_id=user_id)
+        user_benefits = [order.benefit for order in user.orders]
+        return user_benefits
+
+    async def get_user_by_id(self, user_id: int):
         user = await self.user_repo.get_by_id(id=user_id)
         return user
 
@@ -33,3 +42,6 @@ class UserService:
         new_data_dict = new_data.model_dump(exclude_unset=True)
         updated_user = await self.user_repo.update_by_id(id=user_id, new_data=new_data_dict)
         return updated_user
+
+    async def delete_user_by_id(self, user_id: int):
+        await self.user_repo.delete_by_id(id=user_id)

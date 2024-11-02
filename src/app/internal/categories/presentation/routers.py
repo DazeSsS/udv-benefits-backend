@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import category_service
 from app.internal.categories.domain.schemas import CategorySchema, CategorySchemaAdd
@@ -28,3 +28,21 @@ async def get_categories(
 ) -> list[CategorySchema]:
     categories = await category_service.get_categories()
     return categories
+
+
+@router.get('/{id}')
+async def get_category_by_id(
+    id: int,
+    category_service: Annotated[CategoryService, Depends(category_service)],
+) -> CategorySchema:
+    category = await category_service.get_category_by_id(category_id=id)
+    return category
+
+
+@router.delete('/{id}')
+async def delete_category_by_id(
+    id: int,
+    category_service: Annotated[CategoryService, Depends(category_service)],
+):
+    await category_service.delete_category_by_id(category_id=id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -2,13 +2,7 @@ from enum import Enum
 from datetime import date
 from pydantic import BaseModel, EmailStr
 
-
-class PositionEnum(str, Enum):
-    HR = 'hr'
-    BACKEND = 'backend'
-    FRONTEND = 'frontend'
-    TESTER = 'tester'
-    MANAGER = 'manager'
+from app.internal.users.db.models import Position
 
 
 class UserSchemaAdd(BaseModel):
@@ -22,7 +16,7 @@ class UserSchemaAdd(BaseModel):
     # TODO profile_photo
     work_start_date: date | None = None
     work_end_date: date | None = None
-    position: PositionEnum | None = None
+    position: Position | None = None
     department: str | None = None
 
 
@@ -38,7 +32,7 @@ class UserSchemaUpdate(BaseModel):
     is_verified: bool | None = None
     work_start_date: date | None = None
     work_end_date: date | None = None
-    position: PositionEnum | None = None
+    position: Position | None = None
     department: str | None = None
     coins: int | None = None
 

@@ -99,8 +99,6 @@ class AuthService:
 
         user = await self.user_repo.get_one_by_fields(email=email)
 
-        print(settings.ACCESS_LIFETIME)
-
         if user is None:
             return
             # TODO: raise exception
@@ -114,10 +112,10 @@ class AuthService:
             subject='Вход в аккаунт Кафетерий льгот UDV',
             text=(
                 'Поздравляем, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
-                f'Ваш токен: {jwt_token}'
+                f'Для авторизации перейдите по ссыллке: {settings.AUTH_URL + jwt_token}'
             ),
             html=(
                 '<b>Поздравляем, ваш аккаунт был успешно зарегистрирован на Кафетерии льгот UDV!</b><br><br>'
-                f'Ваш токен: {jwt_token}'
+                f'<a href="{settings.AUTH_URL + jwt_token}">АВТОРИЗОВАТЬСЯ</a>'
             )
         )

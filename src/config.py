@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     ACCESS_LIFETIME_MINUTES: int = 15
     REFRESH_LIFETIME_DAYS: int = 30
     PUBLIC_API: bool
+    AUTH_URL: str
 
     SMTP_HOST: str
     SMTP_USER: str

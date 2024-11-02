@@ -1,11 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import user_service
 from app.internal.permissions import authorized_user, is_admin
 from app.internal.users.domain.schemas import UserInfoSchema, UserSchema, UserSchemaAdd, UserSchemaUpdate
 from app.internal.users.domain.services import UserService
+from app.internal.orders.domain.schemas import OrderSchema
+from app.internal.benefits.domain.schemas import BenefitSchema
 
 
 router = APIRouter(
@@ -49,6 +51,24 @@ async def get_authorized_user(
     return user
 
 
+@router.get('/me/orders')
+async def get_user_orders(
+    user_info: Annotated[UserInfoSchema, Depends(authorized_user)],
+    user_service: Annotated[UserService, Depends(user_service)],
+) -> list[OrderSchema]:
+    user_orders = await user_service.get_user_orders(user_id=user_info.id)
+    return user_orders
+
+
+@router.get('/me/benefits')
+async def get_user_benefits(
+    user_info: Annotated[UserInfoSchema, Depends(authorized_user)],
+    user_service: Annotated[UserService, Depends(user_service)],
+) -> list[BenefitSchema]:
+    user_benefits = await user_service.get_user_benefits(user_id=user_info.id)
+    return user_benefits
+
+
 @router.get('/{id}')
 async def get_user_by_id(
     id: int,
@@ -66,3 +86,12 @@ async def update_user_by_id(
 ) -> UserSchema:
     updated_user = await user_service.update_user_by_id(user_id=id, new_data=user)
     return updated_user
+
+
+@router.delete('/{id}')
+async def delete_user_by_id(
+    id: int,
+    user_service: Annotated[UserService, Depends(user_service)],
+):
+    await user_service.delete_user_by_id(user_id=id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

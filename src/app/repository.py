@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from sqlalchemy import select, update
+from sqlalchemy import asc, desc, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -36,6 +36,17 @@ class SQLAlchemyRepository:
 
     async def get_all(self) -> list[model]:
         query = select(self.model)
+        result = await self.session.scalars(query)
+        return result.all()
+
+    async def get_all_sorted(self, sort_field: str, ascending: bool = True) -> list[model]:
+        field = getattr(self.model, sort_field, None)
+        if field is None:
+            raise ValueError(f'Field "{sort_field}" does not exist in model "{self.model.__name__}".')
+
+        order_by_field = asc(field) if ascending else desc(field)
+
+        query = select(self.model).order_by(order_by_field)
         result = await self.session.scalars(query)
         return result.all()
 
