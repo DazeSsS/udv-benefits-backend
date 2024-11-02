@@ -33,8 +33,7 @@ class BenefitSchema(BenefitSchemaAdd):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    # created_at: date
-    # TODO: solve problem
+    created_at: date
 
 
 class GroupedBenefitSchema(BaseModel):

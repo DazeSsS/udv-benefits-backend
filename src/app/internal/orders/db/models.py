@@ -22,7 +22,7 @@ class Order(Base):
     status: Mapped[Status] = mapped_column(String(50))
     benefit_id: Mapped[int] = mapped_column(ForeignKey('benefit.id', ondelete='RESTRICT'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
-    сreated_at: Mapped[date] = mapped_column(
+    created_at: Mapped[date] = mapped_column(
         Date,
         server_default=text(f"DATE(TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP))")
     )

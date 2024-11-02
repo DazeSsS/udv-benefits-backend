@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: a6545f204c64
+Revision ID: 352582b7434c
 Revises: 
-Create Date: 2024-11-01 03:11:46.746413
+Create Date: 2024-11-02 05:45:38.998831
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a6545f204c64'
+revision: str = '352582b7434c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -53,7 +53,7 @@ def upgrade() -> None:
     sa.Column('instructions', sa.String(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_cancellable', sa.Boolean(), nullable=False),
-    sa.Column('сreated_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
+    sa.Column('created_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
     )
@@ -70,7 +70,7 @@ def upgrade() -> None:
     sa.Column('status', sa.String(length=50), nullable=False),
     sa.Column('benefit_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('сreated_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
+    sa.Column('created_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
     sa.Column('activated_at', sa.Date(), nullable=True),
     sa.Column('ends_at', sa.Date(), nullable=True),
     sa.ForeignKeyConstraint(['benefit_id'], ['benefit.id'], ondelete='RESTRICT'),
@@ -82,7 +82,7 @@ def upgrade() -> None:
     sa.Column('message', sa.String(length=256), nullable=False),
     sa.Column('request_id', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
-    sa.Column('сreated_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
     sa.ForeignKeyConstraint(['request_id'], ['order.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['sender_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')

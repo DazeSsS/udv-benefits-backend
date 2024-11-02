@@ -14,7 +14,7 @@ class Comment(Base):
     message: Mapped[str] = mapped_column(String(256))
     request_id: Mapped[int] = mapped_column(ForeignKey('order.id', ondelete='CASCADE'))
     sender_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
-    сreated_at: Mapped[datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime,
         server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
     )

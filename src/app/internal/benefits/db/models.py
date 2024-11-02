@@ -25,7 +25,7 @@ class Benefit(Base):
     instructions: Mapped[str]
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id', ondelete='RESTRICT'))
     is_cancellable: Mapped[bool]
-    сreated_at: Mapped[date] = mapped_column(
+    created_at: Mapped[date] = mapped_column(
         Date,
         server_default=text(f"DATE(TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP))")
     )
