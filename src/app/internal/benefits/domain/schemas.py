@@ -1,11 +1,11 @@
 from enum import Enum
 from datetime import date
-from pydantic import BaseModel, ConfigDict
 
+from app.schema import BaseSchema
 from app.internal.benefits.db.models import Period
 
 
-class BenefitSchemaAdd(BaseModel):
+class BenefitSchemaAdd(BaseSchema):
     title: str
     description: str
     price: int
@@ -15,7 +15,7 @@ class BenefitSchemaAdd(BaseModel):
     is_cancellable: bool
 
 
-class BenefitSchemaUpdate(BaseModel):
+class BenefitSchemaUpdate(BaseSchema):
     title: str | None = None
     description: str | None = None
     price: int | None = None
@@ -26,13 +26,11 @@ class BenefitSchemaUpdate(BaseModel):
 
 
 class BenefitSchema(BenefitSchemaAdd):
-    model_config = ConfigDict(from_attributes=True)
-
     id: int
     created_at: date
 
 
-class GroupedBenefitSchema(BaseModel):
+class GroupedBenefitSchema(BaseSchema):
     category_id: int
     category_title: str
     benefits: list['BenefitSchema']

@@ -1,7 +1,6 @@
-from pydantic import BaseModel
+from app.schema import BaseSchema
 
-
-class CategorySchemaAdd(BaseModel):
+class CategorySchemaAdd(BaseSchema):
     title: str
 
 

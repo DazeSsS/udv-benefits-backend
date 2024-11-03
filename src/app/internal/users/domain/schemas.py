@@ -1,11 +1,12 @@
 from enum import Enum
 from datetime import date
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 
+from app.schema import BaseSchema
 from app.internal.users.db.models import Position
 
 
-class UserSchemaAdd(BaseModel):
+class UserSchemaAdd(BaseSchema):
     email: EmailStr
     first_name: str
     last_name: str
@@ -20,7 +21,7 @@ class UserSchemaAdd(BaseModel):
     department: str | None = None
 
 
-class UserSchemaUpdate(BaseModel):
+class UserSchemaUpdate(BaseSchema):
     email: EmailStr | None = None
     first_name: str | None = None
     last_name: str | None = None
@@ -44,6 +45,6 @@ class UserSchema(UserSchemaAdd):
     coins: int
 
 
-class UserInfoSchema(BaseModel):
+class UserInfoSchema(BaseSchema):
     id: int
     is_admin: bool

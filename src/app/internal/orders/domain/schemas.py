@@ -1,10 +1,10 @@
 from datetime import datetime
-from pydantic import BaseModel
 
+from app.schema import BaseSchema
 from app.internal.orders.db.models import Status
 
 
-class OrderSchemaAdd(BaseModel):
+class OrderSchemaAdd(BaseSchema):
     benefit_id: int
     user_id: int
 

@@ -1,13 +1,14 @@
 from datetime import datetime
-from pydantic import BaseModel
+
+from app.schema import BaseSchema
 
 
-class TokenSchemaAdd(BaseModel):
+class TokenSchemaAdd(BaseSchema):
     jti: str
     user_id: int
 
 
-class TokenSchemaUpdate(BaseModel):
+class TokenSchemaUpdate(BaseSchema):
     revoked: bool
 
 
@@ -16,6 +17,6 @@ class TokenSchema(TokenSchemaAdd):
     revoked: bool
 
 
-class TokenPairSchema(BaseModel):
+class TokenPairSchema(BaseSchema):
     access_token: str
     refresh_token: str
