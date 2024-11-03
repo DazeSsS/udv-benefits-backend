@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import order_service
-from app.internal.permissions import authorized_user, is_admin
 from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd
 from app.internal.orders.domain.services import OrderService
 

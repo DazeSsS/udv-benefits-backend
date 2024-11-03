@@ -1,4 +1,4 @@
-import pytz
+from zoneinfo import ZoneInfo
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,7 +47,7 @@ class OrderService:
             
             user.coins -= benefit.price
             order.status = Status.APPROVED
-            order.activated_at = datetime.now(pytz.timezone(settings.TIMEZONE)).replace(tzinfo=None)
+            order.activated_at = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
 
             if benefit.period is not None:
                 order.ends_at = order.activated_at + PERIOD_MAP[benefit.period]

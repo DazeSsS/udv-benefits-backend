@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.internal.categories.db.repositories import CategoryRepository
 from app.internal.categories.domain.schemas import CategorySchemaAdd
+from app.internal.benefits.domain.schemas import BenefitSchema, GroupedBenefitSchema
 
 
 class CategoryService:
@@ -28,10 +29,19 @@ class CategoryService:
     async def get_category_benefits_by_id(self, category_id: int):
         category = await self.category_repo.get_category_with_benefits_by_id(category_id=category_id)
 
-        if category.benefits:
-            return category.benefits
-        else:
+        if not category.benefits:
             return # TODO
+
+        grouped_benefits = GroupedBenefitSchema(
+            category_id=category.id,
+            category_title=category.title,
+            benefits=[
+                BenefitSchema.model_validate(benefit)
+                for benefit in category.benefits
+            ]
+        )
+
+        return grouped_benefits
 
     async def delete_category_by_id(self, category_id: int):
         await self.category_repo.delete_by_id(id=category_id)

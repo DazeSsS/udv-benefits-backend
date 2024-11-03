@@ -33,4 +33,4 @@ class BenefitSchema(BenefitSchemaAdd):
 class GroupedBenefitSchema(BaseSchema):
     category_id: int
     category_title: str
-    benefits: list['BenefitSchema']
+    benefits: list[BenefitSchema]
