@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import category_service
+from app.internal.benefits.domain.schemas import BenefitSchema
 from app.internal.categories.domain.schemas import CategorySchema, CategorySchemaAdd
 from app.internal.categories.domain.services import CategoryService
 
@@ -37,6 +38,15 @@ async def get_category_by_id(
 ) -> CategorySchema:
     category = await category_service.get_category_by_id(category_id=id)
     return category
+
+
+@router.get('/{id}/benefits')
+async def get_category_benefits_by_id(
+    id: int,
+    category_service: Annotated[CategoryService, Depends(category_service)],
+) -> list[BenefitSchema]:
+    benefits = await category_service.get_category_benefits_by_id(category_id=id)
+    return benefits
 
 
 @router.delete('/{id}')

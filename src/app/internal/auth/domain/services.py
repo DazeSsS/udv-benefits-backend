@@ -103,6 +103,9 @@ class AuthService:
             return
             # TODO: raise exception
 
+        if user.is_verified == False:
+            return
+
         jwt_token = self.create_jwt(payload={'user_id': user.id}, lifetime=timedelta(minutes=5))
 
         recipient_list = [settings.TEST_EMAIL] if settings.TEST_MODE else [email]

@@ -25,5 +25,13 @@ class CategoryService:
         category = await self.category_repo.get_by_id(id=category_id)
         return category
 
+    async def get_category_benefits_by_id(self, category_id: int):
+        category = await self.category_repo.get_category_with_benefits_by_id(category_id=category_id)
+
+        if category.benefits:
+            return category.benefits
+        else:
+            return # TODO
+
     async def delete_category_by_id(self, category_id: int):
         await self.category_repo.delete_by_id(id=category_id)

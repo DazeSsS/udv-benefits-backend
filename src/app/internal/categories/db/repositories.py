@@ -15,3 +15,12 @@ class CategoryRepository(SQLAlchemyRepository):
         )
         result = await self.session.scalars(query)
         return result.all()
+
+    async def get_category_with_benefits_by_id(self, category_id: int):
+        query = (
+            select(Category)
+            .where(Category.id == category_id)
+            .options(selectinload(Category.benefits))
+        )
+        result = await self.session.scalar(query)
+        return result
