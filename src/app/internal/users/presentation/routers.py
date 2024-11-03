@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import user_service
-from app.internal.access import get_current_user, is_admin
+from app.internal.access import get_current_user, is_authorized, is_admin
 from app.internal.services import UserService
 from app.internal.users.domain.schemas import UserInfoSchema, UserSchema, UserSchemaAdd, UserSchemaUpdate
 from app.internal.orders.domain.schemas import OrderSchema
@@ -42,7 +42,7 @@ async def get_unverified_users(
     return users
 
 
-@router.get('/me')
+@router.get('/me', dependencies=[Depends(is_authorized)])
 async def get_authorized_user(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
@@ -51,7 +51,7 @@ async def get_authorized_user(
     return user
 
 
-@router.get('/me/orders')
+@router.get('/me/orders', dependencies=[Depends(is_authorized)])
 async def get_user_orders(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
@@ -60,7 +60,7 @@ async def get_user_orders(
     return user_orders
 
 
-@router.get('/me/benefits')
+@router.get('/me/benefits', dependencies=[Depends(is_authorized)])
 async def get_user_benefits(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
