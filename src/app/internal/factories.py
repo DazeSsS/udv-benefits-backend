@@ -1,0 +1,1 @@
+from app.internal.benefits.domain.factory import BenefitFactory

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.orders.db.repositories import OrderRepository
+from app.internal.repositories import OrderRepository
 from app.internal.orders.domain.schemas import OrderSchemaAdd, OrderSchemaUpdate
 from app.internal.orders.db.models import Status
 from app.internal.benefits.db.models import PERIOD_MAP

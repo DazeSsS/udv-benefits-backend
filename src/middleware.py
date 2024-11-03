@@ -5,7 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from config import settings
 
-from app.internal.auth.domain.services import AuthService
+from app.internal.services import AuthService
 
 
 class BearerTokenMiddleware(BaseHTTPMiddleware):

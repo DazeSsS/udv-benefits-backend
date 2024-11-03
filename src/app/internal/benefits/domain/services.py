@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.benefits.db.repositories import BenefitRepository
-from app.internal.categories.db.repositories import CategoryRepository
-from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
+from app.internal.orders.db.models import Status
+from app.internal.repositories import BenefitRepository, CategoryRepository, UserRepository
+from app.internal.benefits.domain.schemas import BenefitSchema, BenefitType, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
 
 
 class BenefitService:
@@ -10,10 +10,12 @@ class BenefitService:
         self, 
         benefit_repo: BenefitRepository,
         category_repo: CategoryRepository,
+        user_repo: UserRepository,
         session: AsyncSession,
     ):
         self.benefit_repo: BenefitRepository = benefit_repo(session)
         self.category_repo: CategoryRepository = category_repo(session)
+        self.user_repo: UserRepository = user_repo(session)
 
     async def add_benefit(self, benefit: BenefitSchemaAdd):
         benefit_dict = benefit.model_dump()
@@ -28,20 +30,47 @@ class BenefitService:
         benefits = await self.benefit_repo.get_all()
         return benefits
 
-    async def get_grouped_benefits(self):
+    async def get_grouped_benefits(self, user_id: int | None, benefit_type: str):
         categories = await self.category_repo.get_categories_with_benefits()
 
-        grouped_benefits = [
-            GroupedBenefitSchema(
-                category_id=category.id,
-                category_title=category.title,
-                benefits=[
-                    BenefitSchema.model_validate(benefit)
-                    for benefit in category.benefits
-                ]
-            )
-            for category in categories
-        ]
+        if user_id:
+            user = await self.user_repo.get_user_with_benefits(user_id=user_id)
+        else:
+            user = None
+
+        grouped_benefits = []
+        for category in categories:
+            if benefit_type == BenefitType.AVAILABLE and user:
+                category_benefits = GroupedBenefitSchema(
+                    category_id=category.id,
+                    category_title=category.title,
+                    benefits=category.benefits,
+                )
+                grouped_benefits.append(category_benefits)
+            elif benefit_type == BenefitType.ACTIVE and user:
+                user_benefit_ids = []
+                for order in user.orders:
+                    if order.status == Status.APPROVED:
+                        user_benefit_ids.append(order.benefit.id)
+
+                user_benefits = []
+                for benefit in category.benefits:
+                    if benefit.id in user_benefit_ids:
+                        user_benefits.append(benefit)
+
+                category_benefits = GroupedBenefitSchema(
+                    category_id=category.id,
+                    category_title=category.title,
+                    benefits=user_benefits,
+                )
+                grouped_benefits.append(category_benefits)
+            else:
+                category_benefits = GroupedBenefitSchema(
+                    category_id=category.id,
+                    category_title=category.title,
+                    benefits=category.benefits,
+                )
+                grouped_benefits.append(category_benefits)
 
         return grouped_benefits
 

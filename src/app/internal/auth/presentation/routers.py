@@ -4,7 +4,7 @@ from pydantic import EmailStr
 from fastapi import APIRouter, BackgroundTasks, Depends, Response, Request, status
 
 from app.internal.dependencies import auth_service
-from app.internal.auth.domain.services import AuthService
+from app.internal.services import AuthService
 from app.internal.auth.domain.schemas import TokenPairSchema
 
 

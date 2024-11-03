@@ -3,6 +3,13 @@ from datetime import date
 
 from app.schema import BaseSchema
 from app.internal.benefits.db.models import Period
+from app.internal.categories.domain.schemas import CategorySchema
+
+
+class BenefitType(str, Enum):
+    AVAILABLE = 'available'
+    ACTIVE = 'active'
+    UNAVAILABLE = 'unavailable'
 
 
 class BenefitSchemaAdd(BaseSchema):
@@ -28,6 +35,10 @@ class BenefitSchemaUpdate(BaseSchema):
 class BenefitSchema(BenefitSchemaAdd):
     id: int
     created_at: date
+
+
+class BenefitSchemaRel(BenefitSchema):
+    category: CategorySchema
 
 
 class GroupedBenefitSchema(BaseSchema):

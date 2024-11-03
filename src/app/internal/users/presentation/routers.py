@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import user_service
-from app.internal.permissions import authorized_user, is_admin
+from app.internal.access import get_current_user, is_admin
+from app.internal.services import UserService
 from app.internal.users.domain.schemas import UserInfoSchema, UserSchema, UserSchemaAdd, UserSchemaUpdate
-from app.internal.users.domain.services import UserService
 from app.internal.orders.domain.schemas import OrderSchema
 from app.internal.benefits.domain.schemas import BenefitSchema
 
@@ -44,7 +44,7 @@ async def get_unverified_users(
 
 @router.get('/me')
 async def get_authorized_user(
-    user_info: Annotated[UserInfoSchema, Depends(authorized_user)],
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
 ) -> UserSchema:
     user = await user_service.get_user_by_id(user_id=user_info.id)
@@ -53,7 +53,7 @@ async def get_authorized_user(
 
 @router.get('/me/orders')
 async def get_user_orders(
-    user_info: Annotated[UserInfoSchema, Depends(authorized_user)],
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
 ) -> list[OrderSchema]:
     user_orders = await user_service.get_user_orders(user_id=user_info.id)
@@ -62,7 +62,7 @@ async def get_user_orders(
 
 @router.get('/me/benefits')
 async def get_user_benefits(
-    user_info: Annotated[UserInfoSchema, Depends(authorized_user)],
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
 ) -> list[BenefitSchema]:
     user_benefits = await user_service.get_user_benefits(user_id=user_info.id)

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import order_service
 from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd
-from app.internal.orders.domain.services import OrderService
+from app.internal.services import OrderService
 
 
 router = APIRouter(

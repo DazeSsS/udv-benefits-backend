@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.categories.db.repositories import CategoryRepository
+from app.internal.repositories import CategoryRepository
 from app.internal.categories.domain.schemas import CategorySchemaAdd
 from app.internal.benefits.domain.schemas import BenefitSchema, GroupedBenefitSchema
 

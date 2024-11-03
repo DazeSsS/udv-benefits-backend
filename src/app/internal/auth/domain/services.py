@@ -4,9 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import BackgroundTasks
 
 from app.email_client import EmailClient
-from app.internal.auth.db.repositories import AuthRepository
+from app.internal.repositories import AuthRepository, UserRepository
 from app.internal.auth.domain.schemas import TokenPairSchema, TokenSchemaAdd
-from app.internal.users.db.repositories import UserRepository
 
 from config import settings
 

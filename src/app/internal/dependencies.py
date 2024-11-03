@@ -6,16 +6,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
 
 from app.email_client import EmailClient
-from app.internal.auth.db.repositories import AuthRepository
-from app.internal.auth.domain.services import AuthService
-from app.internal.categories.db.repositories import CategoryRepository
-from app.internal.categories.domain.services import CategoryService
-from app.internal.benefits.db.repositories import BenefitRepository
-from app.internal.benefits.domain.services import BenefitService
-from app.internal.orders.db.repositories import OrderRepository
-from app.internal.orders.domain.services import OrderService
-from app.internal.users.db.repositories import UserRepository
-from app.internal.users.domain.services import UserService
+from app.internal.repositories import (
+    AuthRepository,
+    BenefitRepository,
+    CategoryRepository,
+    OrderRepository,
+    UserRepository,
+)
+from app.internal.services import (
+    AuthService,
+    BenefitService,
+    CategoryService,
+    OrderService,
+    UserService,
+)
 
 
 def auth_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
@@ -23,9 +27,6 @@ def auth_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
 
 def category_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
     return CategoryService(CategoryRepository, session)
-
-def benefit_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
-    return BenefitService(BenefitRepository, CategoryRepository, session)
 
 def order_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
     return OrderService(OrderRepository, session)

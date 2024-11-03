@@ -1,9 +1,17 @@
 from enum import Enum
-from datetime import date
-from pydantic import EmailStr
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
+from pydantic import EmailStr, computed_field
 
 from app.schema import BaseSchema
 from app.internal.users.db.models import Position
+
+from config import settings
+
+
+class WorkExperienceSchema(BaseSchema):
+    years: int
+    months: int
 
 
 class UserSchemaAdd(BaseSchema):
@@ -43,6 +51,17 @@ class UserSchema(UserSchemaAdd):
     is_admin: bool
     is_verified: bool
     coins: int
+
+    # @computed_field
+    # def work_experience(self) -> WorkExperienceSchema:
+    #     if self.work_start_date:
+    #         end_date = (
+    #             self.work_end_date
+    #             if self.work_end_date
+    #             else datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
+    #         )
+
+
 
 
 class UserInfoSchema(BaseSchema):
