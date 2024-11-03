@@ -25,17 +25,17 @@ class OrderService:
         order = await self.order_repo.add(data=order_dict)
         return order
 
-    async def get_orders(self, ascending: bool):
-        order = await self.order_repo.get_all_sorted(sort_field='created_at', ascending=ascending)
+    async def get_orders(self):
+        order = await self.order_repo.get_all_orders_with_related()
         return order
 
     async def get_order_by_id(self, order_id):
-        order = await self.order_repo.get_by_id(id=order_id)
+        order = await self.order_repo.get_order_with_related(order_id=order_id)
         return order
 
     async def approve_order_by_id(self, order_id: int):
         async with self.session.begin():
-            order = await self.order_repo.get_order_with_user_and_benefit(order_id=order_id)
+            order = await self.order_repo.get_order_with_related(order_id=order_id)
             user = order.user
             benefit = order.benefit
 

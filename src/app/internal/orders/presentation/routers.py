@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response
 
 from app.internal.dependencies import order_service
-from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd
+from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd, OrderSchemaRel
 from app.internal.services import OrderService
 
 
@@ -24,10 +24,9 @@ async def add_order(
 
 @router.get('')
 async def get_orders(
-    ascending: bool,
     order_service: Annotated[OrderService, Depends(order_service)],
-) -> list[OrderSchema]:
-    orders = await order_service.get_orders(ascending=ascending)
+) -> list[OrderSchemaRel]:
+    orders = await order_service.get_orders()
     return orders
 
 
@@ -53,7 +52,7 @@ async def reject_order_by_id(
 async def get_order_by_id(
     id: int,
     order_service: Annotated[OrderService, Depends(order_service)],
-) -> OrderSchema:
+) -> OrderSchemaRel:
     order = await order_service.get_order_by_id(order_id=id)
     return order
 

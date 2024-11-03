@@ -6,7 +6,7 @@ from app.internal.dependencies import user_service
 from app.internal.access import get_current_user, is_authorized, is_admin
 from app.internal.services import UserService
 from app.internal.users.domain.schemas import UserInfoSchema, UserSchema, UserSchemaAdd, UserSchemaUpdate
-from app.internal.orders.domain.schemas import OrderSchema
+from app.internal.orders.domain.schemas import OrderSchemaRel
 from app.internal.benefits.domain.schemas import BenefitSchema
 
 
@@ -55,7 +55,7 @@ async def get_authorized_user(
 async def get_user_orders(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(user_service)],
-) -> list[OrderSchema]:
+) -> list[OrderSchemaRel]:
     user_orders = await user_service.get_user_orders(user_id=user_info.id)
     return user_orders
 

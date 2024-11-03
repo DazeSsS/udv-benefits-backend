@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.access import get_current_user
+from app.internal.access import get_current_user, is_authorized
 from app.internal.factories import BenefitFactory
 from app.internal.services import BenefitService
 from app.internal.benefits.domain.schemas import BenefitSchema, BenefitType, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
