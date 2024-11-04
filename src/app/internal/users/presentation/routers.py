@@ -1,13 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, Response, status
 
 from app.internal.factories import UserFactory
 from app.internal.access import get_current_user, is_authorized, is_admin
 from app.internal.services import UserService
 from app.internal.users.domain.schemas import UserInfoSchema, UserSchema, UserSchemaAdd, UserSchemaUpdate
 from app.internal.orders.domain.schemas import OrderSchemaBenefits
-from app.internal.benefits.domain.schemas import BenefitSchema
+from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaRel
 
 
 router = APIRouter(
@@ -64,7 +64,7 @@ async def get_user_orders(
 async def get_user_benefits(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],
-) -> list[BenefitSchema]:
+) -> list[BenefitSchemaRel]:
     user_benefits = await user_service.get_user_benefits(user_id=user_info.id)
     return user_benefits
 
@@ -85,6 +85,17 @@ async def update_user_by_id(
     user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],
 ) -> UserSchema:
     updated_user = await user_service.update_user_by_id(user_id=id, new_data=user)
+    return updated_user
+
+
+@router.patch('/{id}/verify')
+async def update_user_by_id(
+    id: int,
+    user: UserSchemaUpdate,
+    user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],
+    background_tasks: BackgroundTasks,
+) -> UserSchema:
+    updated_user = await user_service.verify_user_by_id(user_id=id, verified_data=user, background_tasks=background_tasks)
     return updated_user
 
 

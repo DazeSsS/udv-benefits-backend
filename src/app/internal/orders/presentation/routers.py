@@ -1,10 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, status
 
+from app.internal.access import get_current_user
 from app.internal.factories import OrderFactory
-from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd, OrderSchemaAllRel, OrderSchemaBenefits
 from app.internal.services import OrderService
+from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd, OrderSchemaAllRel, OrderSchemaBenefits
+from app.internal.users.domain.schemas import UserInfoSchema
 
 
 router = APIRouter(
@@ -19,7 +21,9 @@ async def add_order(
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
 ) -> OrderSchema:
     new_order = await order_service.add_order(order=order)
-    return new_order
+    if new_order is not None:
+        return new_order
+    return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
 
 @router.get('')

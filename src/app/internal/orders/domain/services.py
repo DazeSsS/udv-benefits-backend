@@ -3,9 +3,9 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.repositories import OrderRepository
+from app.internal.repositories import BenefitRepository, OrderRepository, UserRepository
 from app.internal.orders.domain.schemas import OrderSchemaAdd, OrderSchemaUpdate
-from app.internal.orders.db.models import Status
+from app.internal.orders.db.models import Order, Status
 from app.internal.benefits.db.models import PERIOD_MAP
 
 from config import settings
@@ -14,15 +14,32 @@ from config import settings
 class OrderService:
     def __init__(
         self,
+        benefit_repo: BenefitRepository,
         order_repo: OrderRepository,
+        user_repo: UserRepository,
         session: AsyncSession,
     ):
+        self.benefit_repo: BenefitRepository = benefit_repo(session)
         self.order_repo: OrderRepository = order_repo(session)
+        self.user_repo: UserRepository = user_repo(session)
         self.session = session
 
     async def add_order(self, order: OrderSchemaAdd):
-        order_dict = order.model_dump()
-        order = await self.order_repo.add(data=order_dict)
+        async with self.session.begin():
+            benefit = await self.benefit_repo.get_by_id(id=order.benefit_id)
+            user = await self.user_repo.get_by_id(id=order.user_id)
+
+            if user.balance < benefit.price:
+                return # TODO
+
+            user.balance -= benefit.price
+
+            order_dict = order.model_dump()
+            order = Order(**order_dict)
+
+            self.session.add(user)
+            self.session.add(order)
+
         return order
 
     async def get_orders(self):
@@ -34,32 +51,47 @@ class OrderService:
         return order
 
     async def approve_order_by_id(self, order_id: int):
-        async with self.session.begin():
-            order = await self.order_repo.get_order_with_related(order_id=order_id)
-            user = order.user
-            benefit = order.benefit
+        order = await self.order_repo.get_order_with_related(order_id=order_id)
+        benefit = order.benefit
 
-            if user.balance < benefit.price:
-                return # TODO
+        if order.status == Status.APPROVED:
+            return # TODO
 
-            if order.status == Status.APPROVED:
-                return # TODO
-            
-            user.balance -= benefit.price
-            order.status = Status.APPROVED
-            order.activated_at = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
+        status = Status.APPROVED
+        activated_at = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
 
-            if benefit.period is not None:
-                order.ends_at = order.activated_at + PERIOD_MAP[benefit.period]
-            
-            self.session.add(user)
-            self.session.add(order)
-        
-        return order
+        new_data = {
+            'status': status,
+            'activated_at': activated_at
+        }
+
+        if benefit.period is not None:
+            new_data.update(
+                {'ends_at': activated_at + PERIOD_MAP[benefit.period]}
+            )
+
+        updated_order = await self.order_repo.update_by_id(id=order_id, new_data=new_data)
+        return updated_order
 
     async def reject_order_by_id(self, order_id: int):
-        new_data = {'status': Status.REJECTED}
-        rejected_order = await self.order_repo.update_by_id(id=order_id, new_data=new_data)
+        async with self.session.begin():
+            rejected_order = await self.order_repo.get_order_with_related(order_id=order_id)
+
+            if rejected_order.status == Status.REJECTED:
+                return # TODO
+
+            user = rejected_order.user
+            benefit = rejected_order.benefit
+
+            user.balance += benefit.price
+
+            rejected_order.status = Status.REJECTED
+            rejected_order.activated_at = None
+            rejected_order.ends_at = None
+
+            self.session.add(user)
+            self.session.add(rejected_order)
+
         return rejected_order
 
     async def update_order_by_id(self, order_id: int, new_data: OrderSchemaUpdate):

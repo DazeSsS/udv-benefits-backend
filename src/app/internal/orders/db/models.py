@@ -20,7 +20,7 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     status: Mapped[Status] = mapped_column(String(50), server_default=Status.IN_WORK.value)
-    benefit_id: Mapped[int] = mapped_column(ForeignKey('benefit.id', ondelete='RESTRICT'))
+    benefit_id: Mapped[int] = mapped_column(ForeignKey('benefit.id', ondelete='CASCADE'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(
         DateTime,

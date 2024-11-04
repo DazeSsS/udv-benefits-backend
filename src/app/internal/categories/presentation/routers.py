@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, status
 
 from app.internal.factories import CategoryFactory
 from app.internal.benefits.domain.schemas import GroupedBenefitSchema

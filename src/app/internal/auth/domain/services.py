@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import BackgroundTasks
 
 from app.email_client import EmailClient
+from app.internal.models import User
 from app.internal.repositories import AuthRepository, UserRepository
 from app.internal.auth.domain.schemas import TokenPairSchema, TokenSchemaAdd
 
@@ -32,7 +33,7 @@ class AuthService:
             algorithms=settings.JWT_ALGORITHM
         )
         return payload
-    
+
     @staticmethod
     def create_jwt(payload: dict, lifetime: timedelta):
         token = jwt.encode(
@@ -93,31 +94,19 @@ class AuthService:
         token_pair = await self.create_tokens(user=user)
         return token_pair
 
-    async def send_email(self, email: str, background_tasks: BackgroundTasks):
-        # TODO: check if email in employee list
-
-        user = await self.user_repo.get_one_by_fields(email=email)
-
-        if user is None:
-            return
-            # TODO: raise exception
-
-        if user.is_verified == False:
-            return
-
+    async def send_email(self, user: User, background_tasks: BackgroundTasks):
         jwt_token = self.create_jwt(payload={'user_id': user.id}, lifetime=timedelta(minutes=5))
 
-        recipient_list = [settings.TEST_EMAIL] if settings.TEST_MODE else [email]
         background_tasks.add_task(
             self.email_client.send_email,
-            recipient_list=recipient_list,
+            recipient_list=[user.email],
             subject='Вход в аккаунт Кафетерий льгот UDV',
             text=(
-                'Поздравляем, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
+                f'Поздравляем, {user.first_name}, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
                 f'Для авторизации перейдите по ссыллке: {settings.AUTH_URL + jwt_token}'
             ),
             html=(
-                '<b>Поздравляем, ваш аккаунт был успешно зарегистрирован на Кафетерии льгот UDV!</b><br><br>'
+                f'<b>Поздравляем, {user.first_name}, ваш аккаунт был успешно зарегистрирован на Кафетерии льгот UDV!</b><br><br>'
                 f'<a href="{settings.AUTH_URL + jwt_token}">АВТОРИЗОВАТЬСЯ</a>'
-            )
+            ),
         )

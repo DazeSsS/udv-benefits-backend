@@ -41,7 +41,6 @@ class UserSchemaUpdate(BaseSchema):
     phone: str | None = None
     has_children: bool | None = None
     is_admin: bool | None = None
-    is_verified: bool | None = None
     work_start_date: date | None = None
     work_end_date: date | None = None
     position: Position | None = None

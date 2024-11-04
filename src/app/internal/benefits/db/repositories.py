@@ -13,5 +13,5 @@ class BenefitRepository(SQLAlchemyRepository):
             select(Benefit)
             .options(joinedload(Benefit.category))
         )
-        result = self.session.scalars(query)
+        result = await self.session.scalars(query)
         return result.all()

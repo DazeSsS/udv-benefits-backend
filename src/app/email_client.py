@@ -7,9 +7,13 @@ from config import settings
 
 class EmailClient:
 
-    def send_email(self, recipient_list: list[str], subject: str, text: str, html: str, send_back: bool = True):
-        if send_back:
-            recipient_list.append(settings.SMTP_USER)
+    def send_email(self, recipient_list: list[str], subject: str, text: str, html: str):
+        if settings.TEST_MODE:
+            test_emails = settings.TEST_EMAILS.split(',')
+            if recipient_list[0] in test_emails:
+                recipient_list.append(settings.SMTP_USER)
+            else:
+                recipient_list = settings.SMTP_USER
 
         msg = MIMEMultipart('alternative')
         msg["Subject"] = subject

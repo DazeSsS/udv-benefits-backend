@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str
 
     TEST_MODE: bool
-    TEST_EMAIL: str
+    TEST_EMAILS: str
 
     LOCAL_ORIGIN: str
     MAIN_ORIGIN: str

@@ -1,0 +1,28 @@
+[
+    {
+        "email": "user1@udv.io",
+        "first_name": "Иван",
+        "last_name": "Иванов",
+        "middle_name": "Иванович",
+        "birth_date": "2004-04-29",
+        "phone": "89573456195",
+        "has_children": "true",
+        "work_start_date": "2022-05-18",
+        "work_end_date": null,
+        "position": "hr",
+        "department": "HR"
+    },
+    {
+        "email": "user2@udv.io",
+        "first_name": "Иван",
+        "last_name": "Петров",
+        "middle_name": "Иванович",
+        "birth_date": "2004-01-29",
+        "phone": "89573452755",
+        "has_children": "false",
+        "work_start_date": "2022-05-18",
+        "work_end_date": null,
+        "position": "backend",
+        "department": "HR"
+    }
+]

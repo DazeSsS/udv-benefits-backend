@@ -3,8 +3,8 @@ from typing import Annotated
 from pydantic import EmailStr
 from fastapi import APIRouter, BackgroundTasks, Depends, Response, Request, status
 
-from app.internal.factories import AuthFactory
-from app.internal.services import AuthService
+from app.internal.factories import AuthFactory, UserFactory
+from app.internal.services import AuthService, UserService
 from app.internal.auth.domain.schemas import TokenPairSchema
 
 
@@ -18,13 +18,14 @@ router = APIRouter(
 async def send_email(
     email: EmailStr,
     auth_service: Annotated[AuthService, Depends(AuthFactory.get_auth_service)],
+    user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],
     background_tasks: BackgroundTasks,
 ):
-    try:
-        await auth_service.send_email(email=email, background_tasks=background_tasks)
+    user = await user_service.get_or_create_user_by_email(email=email)
+    if user is not None and user.is_verified:
+        result = await auth_service.send_email(user=user, background_tasks=background_tasks)
         return Response(status_code=status.HTTP_200_OK)
-    except Exception as e:
-        return Response(content=f'{e}', status_code=status.HTTP_404_NOT_FOUND)
+    return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.post('/token/login')
