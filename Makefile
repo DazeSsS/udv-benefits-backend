@@ -1,3 +1,6 @@
+populate:
+	python -m src.scripts.populate_db
+
 db:
 	docker compose up -d db
 
