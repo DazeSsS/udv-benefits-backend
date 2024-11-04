@@ -23,7 +23,7 @@ class BenefitService:
         return benefit
 
     async def get_benefit_by_id(self, benefit_id: int):
-        benefit = await self.benefit_repo.get_by_id(id=benefit_id)
+        benefit = await self.benefit_repo.get_benefit_with_category(benefit_id=benefit_id)
         return benefit
 
     async def get_benefits(self):
