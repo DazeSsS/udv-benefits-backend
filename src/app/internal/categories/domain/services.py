@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.internal.orders.db.models import Status
 from app.internal.repositories import CategoryRepository, UserRepository
 from app.internal.categories.domain.schemas import CategorySchemaAdd
 from app.internal.benefits.domain.schemas import BenefitSchema, BenefitType, GroupedBenefitSchema
