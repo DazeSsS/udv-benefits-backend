@@ -27,6 +27,7 @@ class OrderRepository(SQLAlchemyRepository):
                 joinedload(Order.user),
                 joinedload(Order.benefit).joinedload(Benefit.category)
             )
+            .order_by(Order.created_at.desc())
         )
         result = await self.session.scalars(query)
         return result.all()

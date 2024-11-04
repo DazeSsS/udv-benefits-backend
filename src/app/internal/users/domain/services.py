@@ -91,7 +91,7 @@ class UserService:
         user = await self.user_repo.get_user_with_related(user_id=user_id)
 
         if user.orders:
-            return user.orders
+            return sorted(user.orders, key=lambda obj: obj.created_at, reverse=True)
         else:
             return []
 
@@ -102,7 +102,8 @@ class UserService:
             return []
 
         user_benefits = []
-        for order in user.orders:
+        sorted_orders = sorted(user.orders, key=lambda obj: obj.created_at, reverse=True)
+        for order in sorted_orders:
             if order.status == Status.APPROVED:
                 user_benefits.append(order.benefit)
 
