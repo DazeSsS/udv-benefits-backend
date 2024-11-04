@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     DB_HOST: str
 
-    COINS_DEFAULT: int
+    BALANCE_DEFAULT: int
     TIMEZONE: str
 
     JWT_SECRET: str
@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     REFRESH_LIFETIME_DAYS: int = 30
     PUBLIC_API: bool
     AUTH_URL: str
+    USERS_FILE_DIR: str
 
     SMTP_HOST: str
     SMTP_USER: str

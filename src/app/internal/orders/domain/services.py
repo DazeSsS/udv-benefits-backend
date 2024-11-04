@@ -39,13 +39,13 @@ class OrderService:
             user = order.user
             benefit = order.benefit
 
-            if user.coins < benefit.price:
+            if user.balance < benefit.price:
                 return # TODO
 
             if order.status == Status.APPROVED:
                 return # TODO
             
-            user.coins -= benefit.price
+            user.balance -= benefit.price
             order.status = Status.APPROVED
             order.activated_at = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
 

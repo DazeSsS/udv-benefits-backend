@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import EmailStr
 from fastapi import APIRouter, BackgroundTasks, Depends, Response, Request, status
 
-from app.internal.dependencies import auth_service
+from app.internal.factories import AuthFactory
 from app.internal.services import AuthService
 from app.internal.auth.domain.schemas import TokenPairSchema
 
@@ -17,7 +17,7 @@ router = APIRouter(
 @router.post('/send-email')
 async def send_email(
     email: EmailStr,
-    auth_service: Annotated[AuthService, Depends(auth_service)],
+    auth_service: Annotated[AuthService, Depends(AuthFactory.get_auth_service)],
     background_tasks: BackgroundTasks,
 ):
     try:
@@ -30,7 +30,7 @@ async def send_email(
 @router.post('/token/login')
 async def login(
     token: str,
-    auth_service: Annotated[AuthService, Depends(auth_service)],
+    auth_service: Annotated[AuthService, Depends(AuthFactory.get_auth_service)],
 ) -> TokenPairSchema:
     tokens = await auth_service.login(token=token)
     return tokens
@@ -39,7 +39,7 @@ async def login(
 @router.post('/token/refresh')
 async def refresh_tokens(
     refresh_token: str,
-    auth_service: Annotated[AuthService, Depends(auth_service)],
+    auth_service: Annotated[AuthService, Depends(AuthFactory.get_auth_service)],
 ) -> TokenPairSchema:
     tokens = await auth_service.refresh_tokens(refresh_token=refresh_token)
     return tokens

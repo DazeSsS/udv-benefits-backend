@@ -34,7 +34,7 @@ class User(Base):
     work_end_date: Mapped[date] = mapped_column(Date, nullable=True)
     position: Mapped[Position] = mapped_column(String(50), nullable=True)
     department: Mapped[str] = mapped_column(String(50), nullable=True)
-    coins: Mapped[int] = mapped_column(Integer, server_default=f'{settings.COINS_DEFAULT}')
+    balance: Mapped[int] = mapped_column(Integer, server_default=f'{settings.BALANCE_DEFAULT}')
     
     orders: Mapped[list['Order']] = relationship(back_populates='user')
     tokens: Mapped[list['Token']] = relationship(back_populates='user')

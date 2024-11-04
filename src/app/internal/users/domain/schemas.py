@@ -23,6 +23,8 @@ class UserSchemaAdd(BaseSchema):
     birth_date: date
     phone: str
     has_children: bool = False
+    is_admin: bool | None = False
+    is_verified: bool | None = False
     # TODO profile_photo
     work_start_date: date | None = None
     work_end_date: date | None = None
@@ -44,14 +46,14 @@ class UserSchemaUpdate(BaseSchema):
     work_end_date: date | None = None
     position: Position | None = None
     department: str | None = None
-    coins: int | None = None
+    balance: int | None = None
 
 
 class UserSchema(UserSchemaAdd):
     id: int
     is_admin: bool
     is_verified: bool
-    coins: int
+    balance: int
 
     @computed_field
     def work_experience(self) -> WorkExperienceSchema | None:

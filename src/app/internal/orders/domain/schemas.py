@@ -3,6 +3,7 @@ from datetime import datetime
 from app.schema import BaseSchema
 from app.internal.orders.db.models import Status
 from app.internal.benefits.domain.schemas import BenefitSchemaRel
+from app.internal.users.domain.schemas import UserSchema
 
 
 class OrderSchemaAdd(BaseSchema):
@@ -26,5 +27,9 @@ class OrderSchema(OrderSchemaAdd):
     ends_at: datetime | None = None
 
 
-class OrderSchemaRel(OrderSchema):
+class OrderSchemaBenefits(OrderSchema):
     benefit: BenefitSchemaRel
+
+
+class OrderSchemaAllRel(OrderSchemaBenefits):
+    user: UserSchema
