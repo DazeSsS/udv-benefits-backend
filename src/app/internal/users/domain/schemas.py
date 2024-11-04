@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 from zoneinfo import ZoneInfo
 from pydantic import EmailStr, computed_field
 
@@ -52,16 +53,19 @@ class UserSchema(UserSchemaAdd):
     is_verified: bool
     coins: int
 
-    # @computed_field
-    # def work_experience(self) -> WorkExperienceSchema:
-    #     if self.work_start_date:
-    #         end_date = (
-    #             self.work_end_date
-    #             if self.work_end_date
-    #             else datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
-    #         )
+    @computed_field
+    def work_experience(self) -> WorkExperienceSchema | None:
+        if self.work_start_date:
+            end_date = (
+                self.work_end_date
+                if self.work_end_date
+                else datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
+            )
+            difference = relativedelta(end_date, self.work_start_date)
+            years = difference.years
+            months = difference.months
 
-
+            return WorkExperienceSchema(years=years, months=months)
 
 
 class UserInfoSchema(BaseSchema):
