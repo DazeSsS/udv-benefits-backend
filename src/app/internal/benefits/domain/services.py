@@ -30,7 +30,7 @@ class BenefitService:
         benefits = await self.benefit_repo.get_benefits_with_categories()
         return benefits
 
-    async def get_grouped_benefits(self, user_id: int | None, benefit_type: str):
+    async def get_grouped_benefits(self, user_id: int | None, benefit_type: BenefitType):
         categories = await self.category_repo.get_categories_with_benefits()
 
         if user_id:
