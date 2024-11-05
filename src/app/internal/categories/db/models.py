@@ -8,6 +8,6 @@ class Category(Base):
     __tablename__ = 'category'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(50))
+    title: Mapped[str] = mapped_column(String(128))
 
     benefits: Mapped[list['Benefit']] = relationship(back_populates='category')

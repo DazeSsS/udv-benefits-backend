@@ -1,6 +1,9 @@
 populate:
 	python -m src.scripts.populate_db
 
+flush:
+	python -m src.scripts.flush_db
+
 db:
 	docker compose up -d db
 

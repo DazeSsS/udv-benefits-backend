@@ -25,7 +25,7 @@ class Benefit(Base):
     __tablename__ = 'benefit'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(128))
+    title: Mapped[str] = mapped_column(String(256))
     description: Mapped[str]
     price: Mapped[int]
     period: Mapped[Period] = mapped_column(String(25), nullable=True)

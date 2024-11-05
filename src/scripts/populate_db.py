@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from src.app.internal.models import Category
+from src.app.internal.models import Benefit, Category
 from src.config import settings 
 
 DATABASE_URL = settings.get_db_url(in_docker=False)
@@ -21,12 +21,25 @@ async def create_categories():
 
     async with AsyncSession(engine) as session:
         async with session.begin():
-            for category in categories_data.get('categories'):
+            categories = categories_data.get('categories')
+            for category in categories:
                 new_category = Category(title=category)
                 session.add(new_category)
 
+# Benefits
+async def create_benefits():
+    with open('data/benefits.json', 'r', encoding='utf-8') as file:
+        benefits_data = json.load(file)
+
+    async with AsyncSession(engine) as session:
+        async with session.begin():
+            for benefit in benefits_data:
+                new_benefit = Benefit(**benefit)
+                session.add(new_benefit)
+
 async def populate_db():
     await create_categories()
+    await create_benefits()
 
 if __name__ == '__main__':
     asyncio.run(populate_db())
