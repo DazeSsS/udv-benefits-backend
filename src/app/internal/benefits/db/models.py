@@ -1,7 +1,7 @@
 from enum import Enum
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 
-from sqlalchemy import Date, ForeignKey, String, text
+from sqlalchemy import DateTime, ForeignKey, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -32,9 +32,9 @@ class Benefit(Base):
     instructions: Mapped[str]
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id', ondelete='RESTRICT'))
     is_cancellable: Mapped[bool]
-    created_at: Mapped[date] = mapped_column(
-        Date,
-        server_default=text(f"DATE(TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP))")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
     )
 
     # TODO: add variations of benefit

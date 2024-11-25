@@ -1,7 +1,7 @@
 from enum import Enum
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, Integer, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -35,6 +35,10 @@ class User(Base):
     position: Mapped[Position] = mapped_column(String(50), nullable=True)
     department: Mapped[str] = mapped_column(String(50), nullable=True)
     balance: Mapped[int] = mapped_column(Integer, server_default=f'{settings.BALANCE_DEFAULT}')
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
+    )
     
     orders: Mapped[list['Order']] = relationship(back_populates='user')
     tokens: Mapped[list['Token']] = relationship(back_populates='user')

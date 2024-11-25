@@ -53,6 +53,7 @@ class UserSchema(UserSchemaAdd):
     is_admin: bool
     is_verified: bool
     balance: int
+    created_at: datetime
 
     @computed_field
     def work_experience(self) -> WorkExperienceSchema | None:

@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: 5ba68518f2bf
+Revision ID: 36c32fc8507f
 Revises: 
-Create Date: 2024-11-05 13:40:23.784020
+Create Date: 2024-11-25 11:52:06.950260
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5ba68518f2bf'
+revision: str = '36c32fc8507f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -41,6 +41,7 @@ def upgrade() -> None:
     sa.Column('position', sa.String(length=50), nullable=True),
     sa.Column('department', sa.String(length=50), nullable=True),
     sa.Column('balance', sa.Integer(), server_default='2000', nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -53,7 +54,7 @@ def upgrade() -> None:
     sa.Column('instructions', sa.String(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_cancellable', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.Date(), server_default=sa.text("DATE(TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP))"), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('Asia/Yekaterinburg', CURRENT_TIMESTAMP)"), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
     )

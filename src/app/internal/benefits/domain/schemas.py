@@ -1,5 +1,5 @@
 from enum import Enum
-from datetime import date
+from datetime import datetime
 
 from app.schema import BaseSchema
 from app.internal.benefits.db.models import Period
@@ -34,7 +34,7 @@ class BenefitSchemaUpdate(BaseSchema):
 
 class BenefitSchema(BenefitSchemaAdd):
     id: int
-    created_at: date
+    created_at: datetime
 
 
 class BenefitSchemaRel(BenefitSchema):
