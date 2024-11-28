@@ -2,11 +2,19 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response, status
 
-from app.internal.access import get_current_user
-from app.internal.factories import OrderFactory
-from app.internal.services import OrderService
-from app.internal.orders.domain.schemas import OrderSchema, OrderSchemaAdd, OrderSchemaAllRel, OrderSchemaBenefits
-from app.internal.users.domain.schemas import UserInfoSchema
+from app.internal.access import get_current_user, is_admin, is_authorized
+from app.internal.factories import CommentFactory, OrderFactory
+from app.internal.services import CommentService, OrderService
+from app.internal.schemas import (
+    CommentSchema,
+    CommentSchemaAdd,
+    OrderSchema,
+    OrderSchemaAdd,
+    OrderSchemaDetail,
+    OrderSchemaUser,
+    OrderSchemaBenefit,
+    UserInfoSchema,
+)
 
 
 router = APIRouter(
@@ -15,26 +23,28 @@ router = APIRouter(
 )
 
 
-@router.post('')
+@router.post('', dependencies=[Depends(is_authorized)])
 async def add_order(
     order: OrderSchemaAdd,
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
 ) -> OrderSchema:
-    new_order = await order_service.add_order(order=order)
+    new_order = await order_service.add_order(order=order, user_id=user_info.id)
     if new_order is not None:
         return new_order
     return Response(status_code=status.HTTP_400_BAD_REQUEST)
 
 
-@router.get('')
+@router.get('', dependencies=[Depends(is_admin)])
 async def get_orders(
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
-) -> list[OrderSchemaAllRel]:
-    orders = await order_service.get_orders()
+) -> list[OrderSchemaUser]:
+    orders = await order_service.get_orders(user_id=user_info.id)
     return orders
 
 
-@router.post('/{id}/approve')
+@router.post('/{id}/approve', dependencies=[Depends(is_admin)])
 async def approve_order_by_id(
     id: int,
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
@@ -43,7 +53,7 @@ async def approve_order_by_id(
     return approved_order
 
 
-@router.post('/{id}/reject')
+@router.post('/{id}/reject', dependencies=[Depends(is_admin)])
 async def reject_order_by_id(
     id: int,
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
@@ -52,12 +62,24 @@ async def reject_order_by_id(
     return rejected_order
 
 
-@router.get('/{id}')
+@router.post('/{id}/comments', dependencies=[Depends(is_authorized)])
+async def add_comment_by_order_id(
+    id: int,
+    comment: CommentSchemaAdd,
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
+    comment_service: Annotated[CommentService, Depends(CommentFactory.get_comment_service)],
+) -> CommentSchema:
+    new_comment = await comment_service.add_comment(order_id=id, comment=comment, user_id=user_info.id)
+    return new_comment
+
+
+@router.get('/{id}', dependencies=[Depends(is_authorized)])
 async def get_order_by_id(
     id: int,
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     order_service: Annotated[OrderService, Depends(OrderFactory.get_order_service)],
-) -> OrderSchemaAllRel:
-    order = await order_service.get_order_by_id(order_id=id)
+) -> OrderSchemaDetail:
+    order = await order_service.get_order_by_id(order_id=id, user_id=user_info.id)
     return order
 
 

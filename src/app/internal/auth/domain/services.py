@@ -58,7 +58,7 @@ class AuthService:
         access_token = self.create_jwt(payload=payload, lifetime=settings.ACCESS_LIFETIME)
         refresh_token = self.create_jwt(payload={}, lifetime=settings.REFRESH_LIFETIME)
 
-        await self.auth_repo.add(jti=refresh_token, user_id=user.id)
+        await self.auth_repo.add(data={'jti': refresh_token, 'user_id': user.id})
 
         return TokenPairSchema(access_token=access_token, refresh_token=refresh_token)
 
@@ -103,10 +103,10 @@ class AuthService:
             subject='Вход в аккаунт Кафетерий льгот UDV',
             text=(
                 f'Поздравляем, {user.first_name}, ваш аккаунт был успешно зарегистрирован в Кафетерии льгот UDV!\n\n'
-                f'Для авторизации перейдите по ссыллке: {settings.AUTH_URL + jwt_token}'
+                f'Для авторизации перейдите по ссылке: {settings.AUTH_URL + jwt_token}'
             ),
             html=(
                 f'<b>Поздравляем, {user.first_name}, ваш аккаунт был успешно зарегистрирован на Кафетерии льгот UDV!</b><br><br>'
-                f'<a href="{settings.AUTH_URL + jwt_token}">АВТОРИЗОВАТЬСЯ</a>'
+                f'Для авторизации нажмите на кнопку: <a href="{settings.AUTH_URL + jwt_token}">АВТОРИЗОВАТЬСЯ</a>'
             ),
         )

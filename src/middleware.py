@@ -1,11 +1,6 @@
-from jwt import InvalidTokenError
-from fastapi import Request, HTTPException, status
+from fastapi import Request
 from starlette.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from config import settings
-
-from app.internal.services import AuthService
 
 
 class BearerTokenMiddleware(BaseHTTPMiddleware):

@@ -11,5 +11,5 @@ from app.internal.services import CategoryService
 
 class CategoryFactory:
     @staticmethod
-    def get_category_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
+    def get_category_service(session: Annotated[AsyncSession, Depends(get_async_session)]) -> CategoryService:
         return CategoryService(CategoryRepository, UserRepository, session)

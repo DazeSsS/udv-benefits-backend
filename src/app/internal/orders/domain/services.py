@@ -3,10 +3,9 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.repositories import BenefitRepository, OrderRepository, UserRepository
-from app.internal.orders.domain.schemas import OrderSchemaAdd, OrderSchemaUpdate
-from app.internal.orders.db.models import Order, Status
-from app.internal.benefits.db.models import PERIOD_MAP
+from app.internal.models import Order
+from app.internal.schemas import OrderSchemaAdd, OrderSchemaUpdate, OrderSchemaUser, PERIOD_MAP, Status, UserInfoSchema
+from app.internal.repositories import BenefitRepository, CommentRepository, OrderRepository, UserRepository
 
 from config import settings
 
@@ -15,19 +14,21 @@ class OrderService:
     def __init__(
         self,
         benefit_repo: BenefitRepository,
+        comment_repo: CommentRepository,
         order_repo: OrderRepository,
         user_repo: UserRepository,
         session: AsyncSession,
     ):
         self.benefit_repo: BenefitRepository = benefit_repo(session)
+        self.comment_repo: CommentRepository = comment_repo(session)
         self.order_repo: OrderRepository = order_repo(session)
         self.user_repo: UserRepository = user_repo(session)
         self.session = session
 
-    async def add_order(self, order: OrderSchemaAdd):
+    async def add_order(self, order: OrderSchemaAdd, user_id: int):
         async with self.session.begin():
             benefit = await self.benefit_repo.get_by_id(id=order.benefit_id)
-            user = await self.user_repo.get_by_id(id=order.user_id)
+            user = await self.user_repo.get_by_id(id=user_id)
 
             if user.balance < benefit.price:
                 return # TODO
@@ -35,23 +36,50 @@ class OrderService:
             user.balance -= benefit.price
 
             order_dict = order.model_dump()
-            order = Order(**order_dict)
+            order_obj = Order(user_id=user_id, **order_dict)
 
             self.session.add(user)
-            self.session.add(order)
+            self.session.add(order_obj)
 
-        return order
+        return order_obj
 
-    async def get_orders(self):
-        order = await self.order_repo.get_all_orders_with_related()
-        return order
+    async def get_orders(self, user_id: int):
+        orders = await self.order_repo.get_all_orders_with_related()
 
-    async def get_order_by_id(self, order_id):
+        result_orders = []
+        for order in orders:
+            unread_comments = await self.comment_repo.get_unread_comments_by_order_id(
+                order_id=order.id, user_id=user_id
+            )
+            comments_count = len(unread_comments)
+
+            order_user = OrderSchemaUser.model_validate(order)
+            order_user.unread_comments = comments_count
+
+            result_orders.append(order_user)
+
+        return result_orders
+
+    async def get_order_by_id(self, order_id: int, user_id: int):
         order = await self.order_repo.get_order_with_related(order_id=order_id)
+        comments = order.comments
+
+        if comments:
+            unread_comments = [
+                comment for comment in comments
+                if not comment.is_read
+                and comment.sender_id != user_id
+            ]
+            for comment in unread_comments:
+                comment.is_read = True
+
+            if unread_comments:
+                await self.comment_repo.session.commit()
+
         return order
 
     async def approve_order_by_id(self, order_id: int):
-        order = await self.order_repo.get_order_with_related(order_id=order_id)
+        order = await self.order_repo.get_order_with_benefit(order_id=order_id)
         benefit = order.benefit
 
         if order.status == Status.APPROVED:
@@ -65,9 +93,9 @@ class OrderService:
             'activated_at': activated_at
         }
 
-        if benefit.period is not None:
+        if benefit.content.period is not None:
             new_data.update(
-                {'ends_at': activated_at + PERIOD_MAP[benefit.period]}
+                {'ends_at': activated_at + PERIOD_MAP[benefit.content.period]}
             )
 
         updated_order = await self.order_repo.update_by_id(id=order_id, new_data=new_data)
@@ -75,7 +103,7 @@ class OrderService:
 
     async def reject_order_by_id(self, order_id: int):
         async with self.session.begin():
-            rejected_order = await self.order_repo.get_order_with_related(order_id=order_id)
+            rejected_order = await self.order_repo.get_order_with_benefit(order_id=order_id)
 
             if rejected_order.status == Status.REJECTED:
                 return # TODO

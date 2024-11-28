@@ -5,9 +5,16 @@ from zoneinfo import ZoneInfo
 from pydantic import EmailStr, computed_field
 
 from app.schema import BaseSchema
-from app.internal.users.db.models import Position
 
 from config import settings
+
+
+class Position(str, Enum):
+    HR = 'hr'
+    BACKEND = 'backend'
+    FRONTEND = 'frontend'
+    TESTER = 'tester'
+    MANAGER = 'manager'
 
 
 class WorkExperienceSchema(BaseSchema):
@@ -25,9 +32,9 @@ class UserSchemaAdd(BaseSchema):
     has_children: bool = False
     is_admin: bool | None = False
     is_verified: bool | None = False
-    # TODO profile_photo
     work_start_date: date | None = None
     work_end_date: date | None = None
+    legal_entity: str | None = None
     position: Position | None = None
     department: str | None = None
 
@@ -41,8 +48,10 @@ class UserSchemaUpdate(BaseSchema):
     phone: str | None = None
     has_children: bool | None = None
     is_admin: bool | None = None
+    # TODO profile_photo
     work_start_date: date | None = None
     work_end_date: date | None = None
+    legal_entity: str | None = None
     position: Position | None = None
     department: str | None = None
     balance: int | None = None
@@ -68,6 +77,13 @@ class UserSchema(UserSchemaAdd):
             months = difference.months
 
             return WorkExperienceSchema(years=years, months=months)
+
+
+class UserSchemaShort(BaseSchema):
+    id: int
+    first_name: str | None = None
+    last_name: str | None = None
+    middle_name: str | None = None
 
 
 class UserInfoSchema(BaseSchema):

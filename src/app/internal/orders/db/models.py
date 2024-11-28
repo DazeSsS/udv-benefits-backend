@@ -1,18 +1,13 @@
 from enum import Enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, text
+from sqlalchemy import DateTime, desc, ForeignKey, String, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 from config import settings
 
-
-class Status(str, Enum):
-    APPROVED = 'approved'
-    REJECTED = 'rejected'
-    IN_WORK = 'in_work'
-    INACTIVE = 'inactive'
+from app.internal.orders.domain.schemas import Status
 
 
 class Order(Base):
@@ -31,4 +26,4 @@ class Order(Base):
 
     benefit: Mapped['Benefit'] = relationship(back_populates='orders')
     user: Mapped['User'] = relationship(back_populates='orders')
-    comments: Mapped[list['Comment']] = relationship(back_populates='order')
+    comments: Mapped[list['Comment']] = relationship(back_populates='order', order_by='desc(Comment.created_at)')

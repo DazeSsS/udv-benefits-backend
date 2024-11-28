@@ -1,4 +1,4 @@
-from app.internal.benefits.db.models import Benefit
+from app.internal.benefits.db.models import Benefit, BenefitContent, Option
 from app.internal.categories.db.models import Category
 from app.internal.comments.db.models import Comment
 from app.internal.orders.db.models import Order

@@ -39,7 +39,7 @@ async def create_benefits():
 
 async def populate_db():
     await create_categories()
-    await create_benefits()
+    # await create_benefits()
 
 if __name__ == '__main__':
     asyncio.run(populate_db())

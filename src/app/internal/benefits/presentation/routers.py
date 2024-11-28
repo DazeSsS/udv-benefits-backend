@@ -28,7 +28,7 @@ async def add_benefit(
 @router.get('')
 async def get_benefits(
     benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
-) -> list[BenefitSchemaRel]:
+) -> list[BenefitSchema]:
     benefits = await benefit_service.get_benefits()
     return benefits
 

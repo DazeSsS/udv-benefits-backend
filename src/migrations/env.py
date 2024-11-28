@@ -9,8 +9,10 @@ from alembic import context
 
 from app.internal.models import (
     Benefit,
+    BenefitContent,
     Category,
     Comment,
+    Option,
     Order,
     Token,
     User

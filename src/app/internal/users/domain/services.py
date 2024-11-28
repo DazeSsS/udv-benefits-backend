@@ -5,10 +5,8 @@ from fastapi import BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.email_client import EmailClient
-from app.internal.repositories import UserRepository
-from app.internal.users.db.models import Position
-from app.internal.orders.db.models import Status
-from app.internal.users.domain.schemas import UserSchemaAdd, UserSchemaUpdate
+from app.internal.repositories import CommentRepository, UserRepository
+from app.internal.schemas import OrderSchemaBenefit, Position, Status, UserSchemaAdd, UserSchemaUpdate
 
 from config import settings
 
@@ -16,10 +14,12 @@ from config import settings
 class UserService:
     def __init__(
         self,
+        comment_repo: CommentRepository,
         user_repo: UserRepository,
         email_client: EmailClient,
         session: AsyncSession,
     ):
+        self.comment_repo: CommentRepository = comment_repo(session)
         self.user_repo: UserRepository = user_repo(session)
         self.email_client: EmailClient = email_client()
         self.users_file: str = settings.USERS_FILE_DIR + 'users.json'
@@ -58,7 +58,7 @@ class UserService:
             **user
         )
         new_user_dict = new_user_schema.model_dump()
-        new_user = await self.user_repo.add(**new_user_dict)
+        new_user = await self.user_repo.add(data=new_user_dict)
         return new_user
         
 
@@ -89,11 +89,21 @@ class UserService:
 
     async def get_user_orders(self, user_id: int):
         user = await self.user_repo.get_user_with_related(user_id=user_id)
+        orders = user.orders
+        
+        result_orders = []
+        for order in orders:
+            unread_comments = await self.comment_repo.get_unread_comments_by_order_id(
+                order_id=order.id, user_id=user_id
+            )
+            comments_count = len(unread_comments)
 
-        if user.orders:
-            return sorted(user.orders, key=lambda obj: obj.created_at, reverse=True)
-        else:
-            return []
+            order_benefit = OrderSchemaBenefit.model_validate(order)
+            order_benefit.unread_comments = comments_count
+
+            result_orders.append(order_benefit)
+
+        return result_orders
 
     async def get_user_benefits(self, user_id: int):
         user = await self.user_repo.get_user_with_related(user_id=user_id)
@@ -102,7 +112,7 @@ class UserService:
             return []
 
         user_benefits = []
-        sorted_orders = sorted(user.orders, key=lambda obj: obj.created_at, reverse=True)
+        orders = user.orders
         for order in sorted_orders:
             if order.status == Status.APPROVED:
                 user_benefits.append(order.benefit)

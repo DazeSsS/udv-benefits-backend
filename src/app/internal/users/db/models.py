@@ -7,13 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 from config import settings
 
-
-class Position(str, Enum):
-    HR = 'hr'
-    BACKEND = 'backend'
-    FRONTEND = 'frontend'
-    TESTER = 'tester'
-    MANAGER = 'manager'
+from app.internal.users.domain.schemas import Position
 
 
 class User(Base):
@@ -32,6 +26,7 @@ class User(Base):
     # profile_photo
     work_start_date: Mapped[date] = mapped_column(Date, nullable=True)
     work_end_date: Mapped[date] = mapped_column(Date, nullable=True)
+    legal_entity: Mapped[str] = mapped_column(String(128))
     position: Mapped[Position] = mapped_column(String(50), nullable=True)
     department: Mapped[str] = mapped_column(String(50), nullable=True)
     balance: Mapped[int] = mapped_column(Integer, server_default=f'{settings.BALANCE_DEFAULT}')
@@ -40,5 +35,5 @@ class User(Base):
         server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
     )
     
-    orders: Mapped[list['Order']] = relationship(back_populates='user')
+    orders: Mapped[list['Order']] = relationship(back_populates='user', order_by='desc(Order.created_at)')
     tokens: Mapped[list['Token']] = relationship(back_populates='user')

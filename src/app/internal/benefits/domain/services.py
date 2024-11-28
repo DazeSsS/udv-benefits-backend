@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.orders.db.models import Status
-from app.internal.repositories import BenefitRepository, CategoryRepository, UserRepository
+from app.internal.models import Benefit, BenefitContent, Option
+from app.internal.orders.domain.schemas import Status
+from app.internal.repositories import BenefitRepository, BenefitContentRepository, OptionRepository, CategoryRepository, UserRepository
 from app.internal.benefits.domain.schemas import BenefitSchema, BenefitType, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
 
 
@@ -9,25 +10,48 @@ class BenefitService:
     def __init__(
         self, 
         benefit_repo: BenefitRepository,
+        benefit_content_repo: BenefitContentRepository,
+        option_repo: OptionRepository,
         category_repo: CategoryRepository,
         user_repo: UserRepository,
         session: AsyncSession,
     ):
         self.benefit_repo: BenefitRepository = benefit_repo(session)
+        self.benefit_content_repo: BenefitContentRepository = benefit_content_repo(session)
+        self.option_repo: OptionRepository = option_repo(session)
         self.category_repo: CategoryRepository = category_repo(session)
         self.user_repo: UserRepository = user_repo(session)
+        self.session = session
 
     async def add_benefit(self, benefit: BenefitSchemaAdd):
-        benefit_dict = benefit.model_dump()
-        benefit = await self.benefit_repo.add(data=benefit_dict)
-        return benefit
+        async with self.session.begin():
+            benefit_dict = benefit.model_dump(exclude={'content', 'options'})
+            benefit_obj = Benefit(**benefit_dict)
+            self.session.add(benefit_obj)
+
+            await self.session.flush()
+
+            content_dict = benefit.content.model_dump()
+            content_dict.update(benefit_id=benefit_obj.id)
+            content_obj = BenefitContent(**content_dict)
+            self.session.add(content_obj)
+
+            for option in benefit.options:
+                option_dict = option.model_dump()
+                option_dict.update(benefit_id=benefit_obj.id)
+                option_obj = Option(**option_dict)
+                self.session.add(option_obj)
+
+            await self.session.refresh(benefit_obj)
+
+        return benefit_obj
 
     async def get_benefit_by_id(self, benefit_id: int):
-        benefit = await self.benefit_repo.get_benefit_with_category(benefit_id=benefit_id)
+        benefit = await self.benefit_repo.get_benefit_with_rel(benefit_id=benefit_id)
         return benefit
 
     async def get_benefits(self):
-        benefits = await self.benefit_repo.get_benefits_with_categories()
+        benefits = await self.benefit_repo.get_all()
         return benefits
 
     async def get_grouped_benefits(self, user_id: int | None, benefit_type: BenefitType):

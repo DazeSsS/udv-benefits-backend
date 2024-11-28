@@ -1,5 +1,6 @@
 from app.schema import BaseSchema
 
+
 class CategorySchemaAdd(BaseSchema):
     title: str
 

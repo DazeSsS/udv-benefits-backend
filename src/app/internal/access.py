@@ -42,5 +42,8 @@ def is_admin(user: Annotated[UserInfoSchema, Depends(get_current_user)]):
     if settings.PUBLIC_API:
         return
 
+    if user is None:
+        raise HTTPException(status_code=401, detail='Invalid or expired token')
+
     if not user.is_admin:
         raise HTTPException(status_code=403, detail='Admin permissions required')

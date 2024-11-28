@@ -12,5 +12,5 @@ from app.internal.services import AuthService
 
 class AuthFactory:
     @staticmethod
-    def get_auth_service(session: Annotated[AsyncSession, Depends(get_async_session)]):
+    def get_auth_service(session: Annotated[AsyncSession, Depends(get_async_session)]) -> AuthService:
         return AuthService(AuthRepository, UserRepository, EmailClient, session)

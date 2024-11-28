@@ -9,11 +9,8 @@ class SQLAlchemyRepository:
     def __init__(self, session: AsyncSession):
         self.session : AsyncSession = session
 
-    async def add(self, data: dict | None = None, **kwargs) -> model:
-        if data is not None:
-            obj = self.model(**data)
-        else:
-            obj = self.model(**kwargs)
+    async def add(self, data: dict) -> model:
+        obj = self.model(**data)
 
         self.session.add(obj)
         await self.session.commit()
