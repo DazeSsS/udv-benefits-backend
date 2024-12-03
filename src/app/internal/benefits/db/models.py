@@ -29,9 +29,9 @@ class Benefit(Base):
     )
 
     options: Mapped[list['Option']] = relationship(back_populates='benefit')
-    orders: Mapped[list['Order']] = relationship(back_populates='benefit')
+    orders: Mapped[list['Order']] = relationship(back_populates='benefit', cascade='all, delete-orphan')
     category: Mapped['Category'] = relationship(back_populates='benefits', lazy='joined')
-    content: Mapped['BenefitContent'] = relationship(back_populates='benefit')
+    content: Mapped['BenefitContent'] = relationship(back_populates='benefit', cascade='all, delete-orphan')
 
 
 class BenefitContent(Base):

@@ -50,7 +50,7 @@ class BenefitService:
 
             elif benefit.required_experience:
                 now = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
-                user_experience = now - user.work_start_date
+                user_experience = now.date() - user.work_start_date
                 required_experience = EXPERIENCE_MAP[benefit.required_experience]
 
                 if user_experience < required_experience:

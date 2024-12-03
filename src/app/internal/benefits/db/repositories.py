@@ -11,6 +11,7 @@ class BenefitRepository(SQLAlchemyRepository):
     async def get_benefit_with_rel(self, benefit_id: int) -> Benefit:
         query = (
             select(Benefit)
+            .where(Benefit.id == benefit_id)
             .options(
                 joinedload(Benefit.content),
                 joinedload(Benefit.options)
