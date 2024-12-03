@@ -19,6 +19,7 @@ class Experience(str, Enum):
     ONE_YEAR = 'one_year'
     TWO_YEARS = 'two_years'
     THREE_YEARS = 'three_years'
+    FOUR_YEARS = 'four_years'
     FIVE_YEARS = 'five_years'
 
 

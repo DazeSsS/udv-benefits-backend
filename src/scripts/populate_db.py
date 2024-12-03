@@ -21,9 +21,8 @@ async def create_categories():
 
     async with AsyncSession(engine) as session:
         async with session.begin():
-            categories = categories_data.get('categories')
-            for category in categories:
-                new_category = Category(title=category)
+            for category in categories_data:
+                new_category = Category(**category)
                 session.add(new_category)
 
 # Benefits

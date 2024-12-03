@@ -1,10 +1,26 @@
-{
-    "categories": [
-        "Здоровье",
-        "Образование",
-        "Спорт",
-        "Перемещение",
-        "Питание",
-        "Подарочные карты"
-    ]
-}
+[
+    {
+        "title": "Здоровье",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/health.svg"
+    },
+    {
+        "title": "Образование",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/book.svg"
+    },
+    {
+        "title": "Спорт",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/sport.svg"
+    },
+    {
+        "title": "Перемещение",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/transport.svg"
+    },
+    {
+        "title": "Питание",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/food.svg"
+    },
+    {
+        "title": "Подарочные карты",
+        "icon": "https://storage.yandexcloud.net/udv-benefits-bucket/categories/giftcard.svg"
+    }
+]

@@ -101,7 +101,7 @@ class BenefitService:
         for category in categories:
             match benefit_type:
                 case BenefitType.AVAILABLE:
-                    available_benefits = self.get_benefits_by_availability(user=user, benefits=category.benefits, available=True)
+                    available_benefits = await self.get_benefits_by_availability(user=user, benefits=category.benefits, available=True)
                     category_benefits = GroupedBenefitSchema(
                         category_id=category.id,
                         category_title=category.title,
@@ -126,7 +126,7 @@ class BenefitService:
                     )
                     grouped_benefits.append(category_benefits)
                 case BenefitType.UNAVAILABLE:
-                    unavailable_benefits = self.get_benefits_by_availability(user=user, benefits=category.benefits, available=False)
+                    unavailable_benefits = await self.get_benefits_by_availability(user=user, benefits=category.benefits, available=False)
                     category_benefits = GroupedBenefitSchema(
                         category_id=category.id,
                         category_title=category.title,
@@ -144,7 +144,7 @@ class BenefitService:
 
         match benefit_type:
             case BenefitType.AVAILABLE:
-                available_benefits = self.get_benefits_by_availability(user=user, benefits=category.benefits, available=True)
+                available_benefits = await self.get_benefits_by_availability(user=user, benefits=category.benefits, available=True)
                 grouped_benefits = GroupedBenefitSchema(
                     category_id=category.id,
                     category_title=category.title,
@@ -167,7 +167,7 @@ class BenefitService:
                     benefits=user_benefits,
                 )
             case BenefitType.UNAVAILABLE:
-                unavailable_benefits = self.get_benefits_by_availability(user=user, benefits=category.benefits, available=False)
+                unavailable_benefits = await self.get_benefits_by_availability(user=user, benefits=category.benefits, available=False)
                 grouped_benefits = GroupedBenefitSchema(
                     category_id=category.id,
                     category_title=category.title,
