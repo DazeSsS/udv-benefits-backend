@@ -8,7 +8,7 @@ class Category(Base):
     __tablename__ = 'category'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(128))
+    title: Mapped[str] = mapped_column(String(128), unique=True)
     icon: Mapped[str] = mapped_column(nullable=True)
 
     benefits: Mapped[list['Benefit']] = relationship(back_populates='category')

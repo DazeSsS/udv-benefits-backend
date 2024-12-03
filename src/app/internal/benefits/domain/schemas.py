@@ -24,9 +24,12 @@ class Experience(str, Enum):
 
 
 class Period(str, Enum):
-    ONE_YEAR = 'one_year'
     ONE_MONTH = 'one_month'
+    TWO_MONTHS = 'two_months'
     THREE_MONTHS = 'three_months'
+    SIX_MONTHS = 'six_months'
+    ONE_YEAR = 'one_year'
+    TWO_YEARS = 'two_years'
 
 
 EXPERIENCE_MAP = {
@@ -37,14 +40,17 @@ EXPERIENCE_MAP = {
     Experience.ONE_YEAR: timedelta(days=365),
     Experience.TWO_YEARS: timedelta(days=730),
     Experience.THREE_YEARS: timedelta(days=1095),
-    Experience.FIVE_YEARS: timedelta(days=1825)
+    Experience.FIVE_YEARS: timedelta(days=1825),
 }
 
 
 PERIOD_MAP = {
-    Period.ONE_YEAR: timedelta(days=365),
     Period.ONE_MONTH: timedelta(days=30),
-    Period.THREE_MONTHS: timedelta(days=90)
+    Period.TWO_MONTHS: timedelta(days=60),
+    Period.THREE_MONTHS: timedelta(days=90),
+    Period.THREE_MONTHS: timedelta(days=180),
+    Period.ONE_YEAR: timedelta(days=365),
+    Period.TWO_YEARS: timedelta(days=730),
 }
 
 
