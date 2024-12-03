@@ -19,6 +19,7 @@ from app.internal.benefits.domain.schemas import (
     Experience,
     EXPERIENCE_MAP,
     GroupedBenefitSchema,
+    OptionSchema,
     OptionSchemaAdd,
     OptionSchemaUpdate,
     Period,

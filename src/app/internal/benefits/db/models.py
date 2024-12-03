@@ -28,7 +28,7 @@ class Benefit(Base):
         server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
     )
 
-    options: Mapped[list['Option']] = relationship(back_populates='benefit')
+    options: Mapped[list['Option']] = relationship(back_populates='benefit', order_by='Option.id')
     orders: Mapped[list['Order']] = relationship(back_populates='benefit', cascade='all, delete-orphan')
     category: Mapped['Category'] = relationship(back_populates='benefits', lazy='joined')
     content: Mapped['BenefitContent'] = relationship(back_populates='benefit', cascade='all, delete-orphan')

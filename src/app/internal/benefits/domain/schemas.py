@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from datetime import datetime, timedelta
 
@@ -63,8 +65,8 @@ class BenefitSchemaAdd(BaseSchema):
     childs_required: bool = False
     category_id: int
     is_active: bool = True
-    content: 'BenefitContentSchemaAdd'
-    options: list['OptionSchemaAdd'] | None = None
+    content: BenefitContentSchemaAdd
+    options: list[OptionSchemaAdd] | None = None
 
 
 class BenefitContentSchemaAdd(BaseSchema):
@@ -84,10 +86,12 @@ class BenefitSchemaUpdate(BaseSchema):
     provider: str | None = None
     description: str | None = None
     price: int | None = None
-    period: Period | None = None
-    instructions: str | None = None
+    required_experience: Experience | None = None
+    childs_required: bool | None = None
     category_id: int | None = None
-    is_cancellable: bool | None = None
+    is_active: bool | None = None
+    content: BenefitContentSchemaUpdate | None = None
+    options: list[OptionSchemaUpdate] | None = None
 
 
 class BenefitContentSchemaUpdate(BaseSchema):
@@ -97,6 +101,7 @@ class BenefitContentSchemaUpdate(BaseSchema):
 
 
 class OptionSchemaUpdate(BaseSchema):
+    id: int
     title: str | None = None
     description: str | None = None
     required_experience: Experience | None = None
@@ -117,12 +122,16 @@ class BenefitSchema(BaseSchema):
     category: CategorySchema
 
 
+class OptionSchema(OptionSchemaAdd):
+    id: int
+
+
 class BenefitSchemaRel(BenefitSchema):
-    content: 'BenefitContentSchemaAdd'
-    options: list['OptionSchemaAdd'] | None
+    content: BenefitContentSchemaAdd
+    options: list[OptionSchema] | None
 
 
 class GroupedBenefitSchema(BaseSchema):
     category_id: int
     category_title: str
-    benefits: list['BenefitSchema']
+    benefits: list[BenefitSchema]

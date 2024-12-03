@@ -77,11 +77,12 @@ class BenefitService:
             content_obj = BenefitContent(**content_dict)
             self.session.add(content_obj)
 
-            for option in benefit.options:
-                option_dict = option.model_dump()
-                option_dict.update(benefit_id=benefit_obj.id)
-                option_obj = Option(**option_dict)
-                self.session.add(option_obj)
+            if benefit.options:
+                for option in benefit.options:
+                    option_dict = option.model_dump()
+                    option_dict.update(benefit_id=benefit_obj.id)
+                    option_obj = Option(**option_dict)
+                    self.session.add(option_obj)
 
             await self.session.refresh(benefit_obj)
 
@@ -185,8 +186,22 @@ class BenefitService:
         return grouped_benefits
 
     async def update_benefit_by_id(self, benefit_id: int, new_data: BenefitSchemaUpdate):
-        new_data_dict = new_data.model_dump(exclude_unset=True)
-        updated_benefit = await self.benefit_repo.update_by_id(id=benefit_id, new_data=new_data_dict)
+        new_benefit_data = new_data.model_dump(exclude_unset=True, exclude={'content', 'options'})
+        if new_benefit_data:
+            await self.benefit_repo.update_by_id(id=benefit_id, new_data=new_benefit_data)
+        
+        if new_data.content:
+            benefit = await self.benefit_repo.get_benefit_with_rel(benefit_id=benefit_id)
+            new_content_data = new_data.content.model_dump(exclude_unset=True)
+            await self.benefit_content_repo.update_by_id(id=benefit.content.id, new_data=new_content_data)
+
+        if new_data.options:
+            for option in new_data.options:
+                option_id = option.id
+                new_option_data = option.model_dump(exclude_unset=True, exclude={'id'})
+                await self.option_repo.update_by_id(id=option_id, new_data=new_option_data)
+
+        updated_benefit = await self.benefit_repo.get_benefit_with_rel(benefit_id=benefit_id)
         return updated_benefit
 
     async def update_benefit_picture(self, benefit_id: int, picture: UploadFile):

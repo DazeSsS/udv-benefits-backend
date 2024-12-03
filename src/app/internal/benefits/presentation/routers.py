@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, File, Form, Response, status, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.internal.access import get_current_user, is_authorized
+from app.internal.access import get_current_user, is_admin, is_authorized
 from app.internal.factories import BenefitFactory
 from app.internal.services import BenefitService
 from app.internal.schemas import (
@@ -62,7 +62,7 @@ async def get_benefit_by_id(
     return benefit
 
 
-@router.put('/{id}/picture')
+@router.put('/{id}/picture', dependencies=[Depends(is_admin)])
 async def add_benefit_picture(
     id: int,
     benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
@@ -77,7 +77,7 @@ async def update_benefit_by_id(
     id: int,
     benefit: BenefitSchemaUpdate,
     benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
-) -> BenefitSchema:
+) -> BenefitSchemaRel:
     updated_benefit = await benefit_service.update_benefit_by_id(benefit_id=id, new_data=benefit)
     return updated_benefit
 
