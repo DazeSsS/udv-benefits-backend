@@ -1,13 +1,20 @@
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, File, Form, Response, status, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.internal.access import get_current_user, is_authorized
 from app.internal.factories import BenefitFactory
 from app.internal.services import BenefitService
-from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaRel, BenefitType, BenefitSchemaAdd, BenefitSchemaUpdate, GroupedBenefitSchema
-from app.internal.users.domain.schemas import UserInfoSchema
+from app.internal.schemas import (
+    BenefitSchema,
+    BenefitSchemaRel,
+    BenefitType,
+    BenefitSchemaAdd,
+    BenefitSchemaUpdate,
+    GroupedBenefitSchema,
+    UserInfoSchema
+)
 
 
 router = APIRouter(
@@ -33,14 +40,14 @@ async def get_benefits(
     return benefits
 
 
-@router.get('/grouped')
+@router.get('/grouped', dependencies=[Depends(is_authorized)])
 async def get_grouped_benefits(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
     benefit_type: BenefitType = BenefitType.AVAILABLE,
 ) -> list[GroupedBenefitSchema]:
     grouped_benefits = await benefit_service.get_grouped_benefits(
-        user_id=user_info.id if user_info else None,
+        user_id=user_info.id,
         benefit_type=benefit_type,
     )
     return grouped_benefits
@@ -53,6 +60,16 @@ async def get_benefit_by_id(
 ) -> BenefitSchemaRel:
     benefit = await benefit_service.get_benefit_by_id(benefit_id=id)
     return benefit
+
+
+@router.put('/{id}/picture')
+async def add_benefit_picture(
+    id: int,
+    benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
+    picture: Annotated[UploadFile, File()],
+) -> BenefitSchema:
+    updated_benefit = await benefit_service.update_benefit_picture(benefit_id=id, picture=picture)
+    return updated_benefit
 
 
 @router.patch('/{id}')

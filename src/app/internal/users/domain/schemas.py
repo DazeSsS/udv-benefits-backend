@@ -48,7 +48,6 @@ class UserSchemaUpdate(BaseSchema):
     phone: str | None = None
     has_children: bool | None = None
     is_admin: bool | None = None
-    # TODO profile_photo
     work_start_date: date | None = None
     work_end_date: date | None = None
     legal_entity: str | None = None
@@ -61,6 +60,7 @@ class UserSchema(UserSchemaAdd):
     id: int
     is_admin: bool
     is_verified: bool
+    profile_photo: str | None
     balance: int
     created_at: datetime
 
@@ -77,13 +77,20 @@ class UserSchema(UserSchemaAdd):
             months = difference.months
 
             return WorkExperienceSchema(years=years, months=months)
+    
+    @computed_field
+    def age(self) -> int:
+        now = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
+        difference = relativedelta(now, self.birth_date)
+        return difference.years
 
 
 class UserSchemaShort(BaseSchema):
     id: int
-    first_name: str | None = None
-    last_name: str | None = None
-    middle_name: str | None = None
+    profile_photo: str | None
+    first_name: str
+    last_name: str
+    middle_name: str | None
 
 
 class UserInfoSchema(BaseSchema):

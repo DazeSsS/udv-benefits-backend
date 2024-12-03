@@ -7,3 +7,4 @@ class CategorySchemaAdd(BaseSchema):
 
 class CategorySchema(CategorySchemaAdd):
     id: int
+    icon: str | None

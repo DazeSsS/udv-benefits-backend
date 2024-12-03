@@ -1,10 +1,11 @@
 import os
 import json
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.email_client import EmailClient
+from app.s3_client import S3Client
 from app.internal.repositories import CommentRepository, UserRepository
 from app.internal.schemas import OrderSchemaBenefit, Position, Status, UserSchemaAdd, UserSchemaUpdate
 
@@ -17,11 +18,13 @@ class UserService:
         comment_repo: CommentRepository,
         user_repo: UserRepository,
         email_client: EmailClient,
+        s3_client: S3Client,
         session: AsyncSession,
     ):
         self.comment_repo: CommentRepository = comment_repo(session)
         self.user_repo: UserRepository = user_repo(session)
         self.email_client: EmailClient = email_client()
+        self.s3_client: S3Client = s3_client()
         self.users_file: str = settings.USERS_FILE_DIR + 'users.json'
         self.users_prepared_file: str = settings.USERS_FILE_DIR + 'users_prepared.json'
 
@@ -93,10 +96,9 @@ class UserService:
         
         result_orders = []
         for order in orders:
-            unread_comments = await self.comment_repo.get_unread_comments_by_order_id(
+            comments_count = await self.comment_repo.get_unread_comments_count(
                 order_id=order.id, user_id=user_id
             )
-            comments_count = len(unread_comments)
 
             order_benefit = OrderSchemaBenefit.model_validate(order)
             order_benefit.unread_comments = comments_count
@@ -144,6 +146,14 @@ class UserService:
     async def update_user_by_id(self, user_id: int, new_data: UserSchemaUpdate):
         new_data_dict = new_data.model_dump(exclude_unset=True)
         updated_user = await self.user_repo.update_by_id(id=user_id, new_data=new_data_dict)
+        return updated_user
+
+    async def update_user_photo(self, user_id: int, photo: UploadFile):
+        user = await self.user_repo.get_by_id(id=user_id)
+
+        file_url = await self.s3_client.upload(file=photo, path=f'users/{user_id}/')
+        updated_user = await self.user_repo.update_by_id(id=user_id, new_data={'profile_photo': file_url})
+
         return updated_user
 
     async def delete_user_by_id(self, user_id: int):

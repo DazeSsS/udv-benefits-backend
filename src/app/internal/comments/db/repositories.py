@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload
 
 from app.repository import SQLAlchemyRepository
@@ -18,15 +18,15 @@ class CommentRepository(SQLAlchemyRepository):
         result = await self.session.scalars(query)
         return result.all()
 
-    async def get_unread_comments_by_order_id(self, order_id: int, user_id: int) -> list[Comment]:
+    async def get_unread_comments_count(self, order_id: int, user_id: int) -> list[Comment]:
         query = (
-            select(Comment)
+            select(func.count())
+            .select_from(Comment)
             .where(
                 (Comment.order_id == order_id) &
                 (Comment.sender_id != user_id) &
                 (Comment.is_read == False)
             )
-            .order_by(Comment.created_at.desc())
         )
-        result = await self.session.scalars(query)
-        return result.all()
+        result = await self.session.scalar(query)
+        return result

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Response, status, UploadFile
 
 from app.internal.factories import UserFactory
 from app.internal.access import get_current_user, is_authorized, is_admin
@@ -49,6 +49,16 @@ async def get_authorized_user(
 ) -> UserSchema:
     user = await user_service.get_user_by_id(user_id=user_info.id)
     return user
+
+
+@router.put('/me/photo', dependencies=[Depends(is_authorized)])
+async def update_profile_photo(
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
+    user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],
+    photo: Annotated[UploadFile, File()],
+) -> UserSchema:
+    updated_user = await user_service.update_user_photo(user_id=user_info.id, photo=photo)
+    return updated_user
 
 
 @router.get('/me/orders', dependencies=[Depends(is_authorized)])

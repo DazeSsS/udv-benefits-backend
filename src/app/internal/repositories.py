@@ -1,3 +1,4 @@
+from app.internal.attachment.db.repositories import AttachmentRepository
 from app.internal.auth.db.repositories import AuthRepository
 from app.internal.benefits.db.repositories import BenefitRepository, BenefitContentRepository, OptionRepository
 from app.internal.categories.db.repositories import CategoryRepository

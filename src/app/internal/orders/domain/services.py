@@ -48,10 +48,9 @@ class OrderService:
 
         result_orders = []
         for order in orders:
-            unread_comments = await self.comment_repo.get_unread_comments_by_order_id(
+            comments_count = await self.comment_repo.get_unread_comments_count(
                 order_id=order.id, user_id=user_id
             )
-            comments_count = len(unread_comments)
 
             order_user = OrderSchemaUser.model_validate(order)
             order_user.unread_comments = comments_count

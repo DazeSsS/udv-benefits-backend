@@ -23,7 +23,7 @@ class User(Base):
     is_admin: Mapped[bool] = mapped_column(Boolean, server_default='false')
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default='false')
     has_children: Mapped[bool] = mapped_column(Boolean, server_default='false')
-    # profile_photo
+    profile_photo: Mapped[str] = mapped_column(nullable=True)
     work_start_date: Mapped[date] = mapped_column(Date, nullable=True)
     work_end_date: Mapped[date] = mapped_column(Date, nullable=True)
     legal_entity: Mapped[str] = mapped_column(String(128))

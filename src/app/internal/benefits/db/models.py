@@ -17,6 +17,7 @@ class Benefit(Base):
     title: Mapped[str] = mapped_column(String(256))
     provider: Mapped[str] = mapped_column(String(256))
     description: Mapped[str] = mapped_column(String(2000))
+    picture: Mapped[str] = mapped_column(nullable=True)
     price: Mapped[int]
     required_experience: Mapped[Experience] = mapped_column(String(25), nullable=True)
     childs_required: Mapped[bool] = mapped_column(Boolean, server_default='false')

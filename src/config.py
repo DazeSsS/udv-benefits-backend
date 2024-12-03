@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     AUTH_URL: str
     USERS_FILE_DIR: str
 
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_STORAGE_BUCKET_NAME: str
+    AWS_ENDPOINT_URL: str
+
     SMTP_HOST: str
     SMTP_USER: str
     SMTP_PORT: int

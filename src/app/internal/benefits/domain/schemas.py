@@ -100,6 +100,7 @@ class BenefitSchema(BaseSchema):
     title: str
     provider: str
     description: str
+    picture: str | None
     price: int
     required_experience: Experience | None
     childs_required: bool

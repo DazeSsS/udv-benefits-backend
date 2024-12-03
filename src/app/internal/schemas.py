@@ -1,3 +1,7 @@
+from app.internal.attachment.domain.schemas import (
+    AttachmentSchema,
+    AttachmentSchemaAdd,
+)
 from app.internal.auth.domain.schemas import (
     TokenPairSchema,
     TokenSchema,
@@ -14,6 +18,7 @@ from app.internal.benefits.domain.schemas import (
     BenefitType,
     Experience,
     EXPERIENCE_MAP,
+    GroupedBenefitSchema,
     OptionSchemaAdd,
     OptionSchemaUpdate,
     Period,

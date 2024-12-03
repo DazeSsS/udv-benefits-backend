@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, File, Form, Response, status, UploadFile
 
 from app.internal.access import get_current_user, is_admin, is_authorized
 from app.internal.factories import CommentFactory, OrderFactory
@@ -65,11 +65,18 @@ async def reject_order_by_id(
 @router.post('/{id}/comments', dependencies=[Depends(is_authorized)])
 async def add_comment_by_order_id(
     id: int,
-    comment: CommentSchemaAdd,
+    message: Annotated[str, Form()],
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     comment_service: Annotated[CommentService, Depends(CommentFactory.get_comment_service)],
+    attachment: Annotated[UploadFile | None, File()] = None,
 ) -> CommentSchema:
-    new_comment = await comment_service.add_comment(order_id=id, comment=comment, user_id=user_info.id)
+    comment = CommentSchemaAdd(message=message)
+    new_comment = await comment_service.add_comment(
+        order_id=id,
+        comment=comment,
+        attachment=attachment,
+        user_id=user_info.id
+    )
     return new_comment
 
 
