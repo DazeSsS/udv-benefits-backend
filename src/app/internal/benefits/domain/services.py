@@ -17,6 +17,8 @@ from app.internal.schemas import (
     Status,
 )
 
+from config import settings
+
 
 class BenefitService:
     def __init__(
