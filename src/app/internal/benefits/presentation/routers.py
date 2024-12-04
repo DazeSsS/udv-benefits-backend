@@ -53,12 +53,13 @@ async def get_grouped_benefits(
     return grouped_benefits
 
 
-@router.get('/{id}')
+@router.get('/{id}', dependencies=[Depends(is_authorized)])
 async def get_benefit_by_id(
     id: int,
+    user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     benefit_service: Annotated[BenefitService, Depends(BenefitFactory.get_benefit_service)],
 ) -> BenefitSchemaRel:
-    benefit = await benefit_service.get_benefit_by_id(benefit_id=id)
+    benefit = await benefit_service.get_benefit_by_id(benefit_id=id, user_id=user_info.id)
     return benefit
 
 

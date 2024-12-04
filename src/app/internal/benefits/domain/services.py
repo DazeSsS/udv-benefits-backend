@@ -12,8 +12,10 @@ from app.internal.schemas import (
     BenefitType,
     BenefitSchemaAdd,
     BenefitSchemaUpdate,
+    BenefitSchemaRel,
     EXPERIENCE_MAP,
     GroupedBenefitSchema,
+    OptionSchema,
     Status,
 )
 
@@ -39,6 +41,17 @@ class BenefitService:
         self.s3_client: S3Client = s3_client()
         self.session = session
 
+    def is_enough_experience(self, user: User, required_experience: str):
+        now = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
+        user_experience = now.date() - user.work_start_date
+        required = EXPERIENCE_MAP[required_experience].get('timedelta')
+
+        return user_experience >= required
+
+    def get_option_condition(self, option: Option, required_experience: str):
+        message_base = f'Вариант «{option.title}» доступен сотрудникам со стажем от'
+        return f'{message_base} {EXPERIENCE_MAP[required_experience].get('aliases')[0]}'
+
     async def get_benefits_by_availability(self, user: User, benefits: list[Benefit], available: bool = True):
         result_benefits = []
         for benefit in benefits:
@@ -49,11 +62,7 @@ class BenefitService:
                     result_benefits.append(benefit)
 
             elif benefit.required_experience:
-                now = datetime.now(ZoneInfo(settings.TIMEZONE)).replace(tzinfo=None)
-                user_experience = now.date() - user.work_start_date
-                required_experience = EXPERIENCE_MAP[benefit.required_experience]
-
-                if user_experience < required_experience:
+                if not self.is_enough_experience(user=user, required_experience=benefit.required_experience):
                     if available:
                         continue
                     else:
@@ -88,8 +97,33 @@ class BenefitService:
 
         return benefit_obj
 
-    async def get_benefit_by_id(self, benefit_id: int):
+    async def get_benefit_by_id(self, benefit_id: int, user_id: int):
         benefit = await self.benefit_repo.get_benefit_with_rel(benefit_id=benefit_id)
+        options = benefit.options
+
+        if options:
+            benefit_dict = BenefitSchemaRel.model_validate(benefit).model_dump(exclude={'options'})
+            user = await self.user_repo.get_by_id(id=user_id)
+
+            updated_options = []
+            for option in options:
+                option_schema = OptionSchema.model_validate(option)
+                if option.required_experience:
+                    if not self.is_enough_experience(user=user, required_experience=option.required_experience):
+                        option_schema.required_condition = self.get_option_condition(
+                            option=option,
+                            required_experience=option.required_experience
+                        )
+                        
+                updated_options.append(option_schema)
+
+            benefit_schema = BenefitSchemaRel(
+                **benefit_dict,
+                options=updated_options
+            )
+
+            return benefit_schema
+
         return benefit
 
     async def get_benefits(self):

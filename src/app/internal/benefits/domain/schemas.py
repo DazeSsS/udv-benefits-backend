@@ -35,14 +35,42 @@ class Period(str, Enum):
 
 
 EXPERIENCE_MAP = {
-    Experience.ONE_MONTH: timedelta(days=30),
-    Experience.THREE_MONTHS: timedelta(days=90),
-    Experience.SIX_MONTHS: timedelta(days=180),
-    Experience.NINE_MONTHS: timedelta(days=270),
-    Experience.ONE_YEAR: timedelta(days=365),
-    Experience.TWO_YEARS: timedelta(days=730),
-    Experience.THREE_YEARS: timedelta(days=1095),
-    Experience.FIVE_YEARS: timedelta(days=1825),
+    Experience.ONE_MONTH: {
+        'timedelta': timedelta(days=30),
+        'aliases': ['1-го месяца']
+    },
+    Experience.THREE_MONTHS: {
+        'timedelta': timedelta(days=90),
+        'aliases': ['3-х месяцев']
+    },
+    Experience.SIX_MONTHS: {
+        'timedelta': timedelta(days=180),
+        'aliases': ['6-ти месяцев']
+    },
+    Experience.NINE_MONTHS: {
+        'timedelta': timedelta(days=270),
+        'aliases': ['9-ти месяцев']
+    },
+    Experience.ONE_YEAR: {
+        'timedelta': timedelta(days=365),
+        'aliases': ['1-го года']
+    },
+    Experience.TWO_YEARS: {
+        'timedelta': timedelta(days=730),
+        'aliases': ['2-х лет']
+    },
+    Experience.THREE_YEARS: {
+        'timedelta': timedelta(days=1095),
+        'aliases': ['3-х лет']
+    },
+    Experience.FOUR_YEARS: {
+        'timedelta': timedelta(days=1460),
+        'aliases': ['4-х лет']
+    },
+    Experience.FIVE_YEARS: {
+        'timedelta': timedelta(days=1825),
+        'aliases': ['5-ти лет']
+    },
 }
 
 
@@ -125,6 +153,7 @@ class BenefitSchema(BaseSchema):
 
 class OptionSchema(OptionSchemaAdd):
     id: int
+    required_condition: str | None = None
 
 
 class BenefitSchemaRel(BenefitSchema):
