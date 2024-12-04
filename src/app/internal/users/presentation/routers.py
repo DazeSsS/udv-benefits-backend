@@ -51,7 +51,7 @@ async def get_authorized_user(
     return user
 
 
-@router.put('/me/photo', dependencies=[Depends(is_authorized)])
+@router.patch('/me/photo', dependencies=[Depends(is_authorized)])
 async def update_profile_photo(
     user_info: Annotated[UserInfoSchema, Depends(get_current_user)],
     user_service: Annotated[UserService, Depends(UserFactory.get_user_service)],

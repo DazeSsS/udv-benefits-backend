@@ -149,6 +149,7 @@ class BenefitSchema(BaseSchema):
     is_active: bool
     created_at: datetime
     category: CategorySchema
+    required_conditions: list[str] | None = None
 
 
 class OptionSchema(OptionSchemaAdd):
