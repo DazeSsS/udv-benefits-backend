@@ -46,4 +46,4 @@ class OrderSchemaUser(OrderSchemaBenefit):
 class OrderSchemaDetail(OrderSchema):
     benefit: BenefitSchemaRel
     comments: list[CommentSchemaRel]
-    option: OptionSchema
+    option: OptionSchema | None
