@@ -23,4 +23,4 @@ class Comment(Base):
 
     attachment: Mapped['Attachment'] = relationship(lazy='joined')
     order: Mapped['Order'] = relationship(back_populates='comments')
-    sender: Mapped['User'] = relationship()
+    sender: Mapped['User'] = relationship(lazy='joined')

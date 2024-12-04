@@ -17,6 +17,7 @@ class Order(Base):
     status: Mapped[Status] = mapped_column(String(50), server_default=Status.IN_WORK.value)
     benefit_id: Mapped[int] = mapped_column(ForeignKey('benefit.id', ondelete='CASCADE'))
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    option_id: Mapped[int] = mapped_column(ForeignKey('option.id', ondelete='SET NULL'), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         server_default=text(f"TIMEZONE('{settings.TIMEZONE}', CURRENT_TIMESTAMP)")
@@ -26,4 +27,5 @@ class Order(Base):
 
     benefit: Mapped['Benefit'] = relationship(back_populates='orders')
     user: Mapped['User'] = relationship(back_populates='orders')
+    option: Mapped['Option'] = relationship()
     comments: Mapped[list['Comment']] = relationship(back_populates='order', order_by='desc(Comment.created_at)')

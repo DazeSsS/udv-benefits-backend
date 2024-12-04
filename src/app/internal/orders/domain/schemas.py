@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import computed_field
 
 from app.schema import BaseSchema
-from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaRel
+from app.internal.benefits.domain.schemas import BenefitSchema, BenefitSchemaRel, OptionSchema
 from app.internal.comments.domain.schemas import CommentSchemaRel
 from app.internal.users.domain.schemas import UserSchema
 
@@ -18,14 +18,11 @@ class Status(str, Enum):
 
 class OrderSchemaAdd(BaseSchema):
     benefit_id: int
+    option_id: int | None = None
 
 
-class OrderSchemaUpdate(OrderSchemaAdd):
+class OrderSchemaUpdate(BaseSchema):
     status: Status | None = None
-    benefit_id: int | None = None
-    user_id: int | None = None
-    activated_at: datetime | None = None
-    ends_at: datetime | None = None
 
 
 class OrderSchema(OrderSchemaAdd):
@@ -49,3 +46,4 @@ class OrderSchemaUser(OrderSchemaBenefit):
 class OrderSchemaDetail(OrderSchema):
     benefit: BenefitSchemaRel
     comments: list[CommentSchemaRel]
+    option: OptionSchema

@@ -35,4 +35,7 @@ class CommentService:
 
         comment_dict.update(order_id=order_id, sender_id=user_id)
         comment = await self.comment_repo.add(data=comment_dict)
-        return comment
+
+        new_comment = await self.comment_repo.get_by_id(id=comment.id)
+        
+        return new_comment

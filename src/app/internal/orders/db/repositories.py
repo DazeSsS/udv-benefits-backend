@@ -26,10 +26,11 @@ class OrderRepository(SQLAlchemyRepository):
             select(Order)
             .where(Order.id == order_id)
             .options(
+                joinedload(Order.option),
                 joinedload(Order.benefit).joinedload(Benefit.category),
                 joinedload(Order.benefit).joinedload(Benefit.content),
                 joinedload(Order.benefit).joinedload(Benefit.options),
-                selectinload(Order.comments).joinedload(Comment.sender)
+                selectinload(Order.comments)
             )
         )
         result = await self.session.scalar(query)

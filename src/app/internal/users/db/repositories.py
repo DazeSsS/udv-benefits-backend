@@ -31,3 +31,20 @@ class UserRepository(SQLAlchemyRepository):
         )
         result = await self.session.scalar(query)
         return result
+
+    async def get_all_users(self) -> list[User]:
+        query = (
+            select(User)
+            .order_by(User.is_verified, User.created_at.desc())
+        )
+        result = await self.session.scalars(query)
+        return result.all()
+
+    async def get_unverified_users(self) -> list[User]:
+        query = (
+            select(User)
+            .where(User.is_verified == False)
+            .order_by(User.created_at.desc())
+        )
+        result = await self.session.scalars(query)
+        return result.all()

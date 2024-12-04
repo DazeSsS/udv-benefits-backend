@@ -79,16 +79,16 @@ class UserService:
         return user
 
     async def get_unverified_users(self):
-        unverified_users = await self.user_repo.get_all_by_fields(is_verified=False)
-        return sorted(unverified_users, key=lambda obj: obj.id, reverse=True)
+        unverified_users = await self.user_repo.get_unverified_users()
+        return unverified_users
 
     async def get_user_by_id(self, user_id: int):
         user = await self.user_repo.get_by_id(id=user_id)
         return user
 
     async def get_users(self):
-        users = await self.user_repo.get_all()
-        return sorted(users, key=lambda obj: obj.id, reverse=True)
+        users = await self.user_repo.get_all_users()
+        return users
 
     async def get_user_orders(self, user_id: int):
         user = await self.user_repo.get_user_with_related(user_id=user_id)

@@ -121,6 +121,27 @@ class OrderService:
 
         return rejected_order
 
+    async def cancel_order_by_id(self, order_id: int):
+        async with self.session.begin():
+            order = await self.order_repo.get_order_with_benefit(order_id=order_id)
+
+            if order.status == Status.REJECTED or not order.benefit.content.is_cancellable:
+                return # TODO
+
+            user = order.user
+            benefit = order.benefit
+
+            user.balance += benefit.price
+
+            order.status = Status.REJECTED
+            order.activated_at = None
+            order.ends_at = None
+
+            self.session.add(user)
+            self.session.add(order)
+        
+        return order
+
     async def update_order_by_id(self, order_id: int, new_data: OrderSchemaUpdate):
         new_data_dict = new_data.model_dump(exclude_unset=True)
         updated_order = await self.order_repo.update_by_id(id=order_id, new_data=new_data_dict)
