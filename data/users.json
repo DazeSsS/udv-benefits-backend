@@ -8,21 +8,21 @@
         "phone": "89573456195",
         "has_children": "true",
         "work_start_date": "2022-05-18",
-        "work_end_date": null,
+        "legal_entity": "UDV",
         "position": "hr",
         "department": "HR"
     },
     {
         "email": "user2@udv.io",
-        "first_name": "Иван",
+        "first_name": "Петр",
         "last_name": "Петров",
-        "middle_name": "Иванович",
+        "middle_name": "Петрович",
         "birth_date": "2004-01-29",
         "phone": "89573452755",
         "has_children": "false",
-        "work_start_date": "2022-05-18",
-        "work_end_date": null,
+        "work_start_date": "2023-05-18",
+        "legal_entity": "UDV",
         "position": "backend",
-        "department": "HR"
+        "department": "Development"
     }
 ]

@@ -60,6 +60,7 @@ class BenefitSchemaAdd(BaseSchema):
     title: str
     provider: str
     description: str
+    picture: str | None = None
     price: int
     required_experience: Experience | None = None
     childs_required: bool = False

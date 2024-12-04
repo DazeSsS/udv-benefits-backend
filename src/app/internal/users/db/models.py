@@ -26,7 +26,7 @@ class User(Base):
     profile_photo: Mapped[str] = mapped_column(nullable=True)
     work_start_date: Mapped[date] = mapped_column(Date, nullable=True)
     work_end_date: Mapped[date] = mapped_column(Date, nullable=True)
-    legal_entity: Mapped[str] = mapped_column(String(128))
+    legal_entity: Mapped[str] = mapped_column(String(128), nullable=True)
     position: Mapped[Position] = mapped_column(String(50), nullable=True)
     department: Mapped[str] = mapped_column(String(50), nullable=True)
     balance: Mapped[int] = mapped_column(Integer, server_default=f'{settings.BALANCE_DEFAULT}')
