@@ -149,7 +149,6 @@ class BenefitSchema(BaseSchema):
     is_active: bool
     created_at: datetime
     category: CategorySchema
-    required_conditions: list[str] | None = None
 
 
 class OptionSchema(OptionSchemaAdd):
@@ -160,6 +159,7 @@ class OptionSchema(OptionSchemaAdd):
 class BenefitSchemaRel(BenefitSchema):
     content: BenefitContentSchemaAdd
     options: list[OptionSchema] | None
+    required_conditions: list[str] | None = None
 
 
 class GroupedBenefitSchema(BaseSchema):

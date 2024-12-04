@@ -1,7 +1,10 @@
 import sys
+sys.dont_write_bytecode = True
+
 import json
 import asyncio
 from pathlib import Path
+
 
 from sqlalchemy.ext.asyncio import create_async_engine
 
