@@ -35,10 +35,6 @@ class BenefitRepository(SQLAlchemyRepository):
                 Order.benefit_id,
                 func.count(Order.id).label("order_count")
             )
-            .where(
-                (Order.status == Status.APPROVED) |
-                (Order.status == Status.IN_WORK)
-            )
             .group_by(Order.benefit_id)
         ).subquery()
 
