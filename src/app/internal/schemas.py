@@ -43,6 +43,10 @@ from app.internal.orders.domain.schemas import (
     OrderSchemaUpdate,
     Status,
 )
+from app.internal.statistics.domain.schemas import (
+    StatisticsSchema,
+    CategoryStatistics,
+)
 from app.internal.users.domain.schemas import (
     Position,
     UserInfoSchema,

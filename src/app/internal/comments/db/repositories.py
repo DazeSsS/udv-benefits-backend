@@ -18,7 +18,7 @@ class CommentRepository(SQLAlchemyRepository):
         result = await self.session.scalars(query)
         return result.all()
 
-    async def get_unread_comments_count(self, order_id: int, user_id: int) -> list[Comment]:
+    async def get_unread_comments_count(self, order_id: int, user_id: int) -> int:
         query = (
             select(func.count())
             .select_from(Comment)

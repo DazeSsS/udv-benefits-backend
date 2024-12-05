@@ -1,8 +1,9 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload, selectinload
 
 from app.repository import SQLAlchemyRepository
 from app.internal.models import Benefit, Comment, Order
+from app.internal.schemas import Status
 
 
 class OrderRepository(SQLAlchemyRepository):
@@ -55,6 +56,15 @@ class OrderRepository(SQLAlchemyRepository):
             .options(
                 selectinload(Order.comments),
             )
+        )
+        result = await self.session.scalar(query)
+        return result
+
+    async def get_active_orders_count(self) -> int:
+        query = (
+            select(func.count())
+            .select_from(Order)
+            .where(Order.status == Status.APPROVED)
         )
         result = await self.session.scalar(query)
         return result

@@ -1,4 +1,4 @@
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import selectinload
 
 from app.repository import SQLAlchemyRepository
@@ -48,3 +48,11 @@ class UserRepository(SQLAlchemyRepository):
         )
         result = await self.session.scalars(query)
         return result.all()
+
+    async def get_total_users_count(self) -> int:
+        query = (
+            select(func.count())
+            .select_from(User)
+        )
+        result = await self.session.scalar(query)
+        return result
