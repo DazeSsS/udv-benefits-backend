@@ -20,7 +20,7 @@ class CategoryService:
         self.user_repo: UserRepository = user_repo(session)
         self.s3_client: S3Client = s3_client()
 
-    async def add_category(self, category: CategorySchemaAdd, icon: UploadFile):
+    async def add_category(self, category: CategorySchemaAdd, icon: UploadFile | None):
         category_dict = category.model_dump()
 
         if icon:

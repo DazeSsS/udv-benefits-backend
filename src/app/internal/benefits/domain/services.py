@@ -136,7 +136,7 @@ class BenefitService:
         return benefit_schema
 
     async def get_benefits(self):
-        benefits = await self.benefit_repo.get_all()
+        benefits = await self.benefit_repo.get_benefits_with_rel()
         return benefits
 
     async def get_grouped_benefits(self, user_id: int, benefit_type: BenefitType):

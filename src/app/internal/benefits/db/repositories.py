@@ -1,5 +1,5 @@
 from sqlalchemy import desc, func, select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.repository import SQLAlchemyRepository
 from app.internal.models import Benefit, BenefitContent, Option, Order
@@ -15,11 +15,23 @@ class BenefitRepository(SQLAlchemyRepository):
             .where(Benefit.id == benefit_id)
             .options(
                 joinedload(Benefit.content),
-                joinedload(Benefit.options)
+                selectinload(Benefit.options)
             )
         )
         result = await self.session.scalar(query)
         return result
+
+    async def get_benefits_with_rel(self) -> list[Benefit]:
+        query = (
+            select(Benefit)
+            .options(
+                joinedload(Benefit.content),
+                selectinload(Benefit.options)
+            )
+            .order_by(Benefit.created_at.desc(), Benefit.id.desc())
+        )
+        result = await self.session.scalars(query)
+        return result.all()
 
     async def get_total_benefits_count(self) -> int:
         query = (

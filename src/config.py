@@ -53,6 +53,12 @@ class Settings(BaseSettings):
             f'{self.DB_HOST if in_docker else self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
         )
 
+    def get_sync_db_url(self, in_docker=True):
+        return (
+            f'postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@'
+            f'{self.DB_HOST if in_docker else self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
+        )
+
     model_config = SettingsConfigDict(env_file='.env')
 
 
