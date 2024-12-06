@@ -28,6 +28,7 @@ class UserSchemaAdd(BaseSchema):
     last_name: str
     middle_name: str | None = None
     birth_date: date
+    profile_photo: str | None = 'https://storage.yandexcloud.net/udv-benefits-bucket/users/profile.jpg'
     phone: str
     has_children: bool = False
     is_admin: bool | None = False
